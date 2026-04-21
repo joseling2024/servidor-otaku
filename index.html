@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Chap Otaku | Premium Chat</title>
+    <title>WasuChat | Premium Chat</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
@@ -37,52 +37,42 @@
         /* PANTALLA DE INGRESO */
         #login-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .avatar-upload-container { position: relative; margin-bottom: 20px; cursor: pointer; transition: transform 0.2s; }
-        .avatar-upload-container:hover { transform: scale(1.05); }
         .avatar-preview { width: 130px; height: 130px; border-radius: 50%; border: 5px solid #000; object-fit: cover; background: #eee; box-shadow: 5px 5px 0px var(--primary); }
         .avatar-badge { position: absolute; bottom: 0; right: 0; background: var(--secondary); border: 3px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 2px 2px 0px #000; }
         
         .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
-        .login-input:focus { border-color: var(--primary); background: #fff0f5; }
         
         .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; transition: 0.2s; }
         .btn-entrar:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px #000; }
 
-        header { background: white; border-bottom: 5px solid #000; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; overflow: visible;}
+        header { background: white; border-bottom: 5px solid #000; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
         
         .title { 
             font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; 
             text-transform: uppercase; letter-spacing: 2px; display: inline-block;
-            animation: fiestaOtaku 1.5s infinite alternate ease-in-out;
+            animation: fiestaWasu 1.5s infinite alternate ease-in-out;
         }
 
-        @keyframes fiestaOtaku {
-            0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000, 0 0 10px #ff007f, 0 0 20px #ff007f; }
-            50% { transform: scale(1.15) translateY(-4px) rotate(3deg); color: #00f2ff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 6px 6px 0 #000, 0 0 15px #00f2ff, 0 0 30px #00f2ff; }
-            100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000, 0 0 15px #ffff00, 0 0 30px #ffff00; }
+        @keyframes fiestaWasu {
+            0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
+            50% { transform: scale(1.15) translateY(-4px) rotate(3deg); color: #00f2ff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 6px 6px 0 #000; }
+            100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
         }
-
-        .btn-salir { background: #ff3333; color: white; border: 2px solid #000; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0px #000;}
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-glass); width: 100%; height: 100%; }
         
         .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #000;}
         .btn-regresar { background: var(--accent); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; display: none; }
-        
-        /* BOTÓN DE LISTA DE CHATS */
         .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
 
         #messages-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        
-        .msg-container { display: flex; flex-direction: column; max-width: 85%; }
-        .msg-own { align-self: flex-end; align-items: flex-end; }
-        .msg-other { align-self: flex-start; }
         .msg-bubble { padding: 10px 15px; border: 3px solid #000; border-radius: 15px; font-weight: 700; position: relative; box-shadow: 4px 4px 0px #000; word-wrap: break-word; font-size: 1rem;}
+        .msg-own { align-self: flex-end; align-items: flex-end; }
         .msg-own .msg-bubble { background: var(--primary); color: white; border-bottom-right-radius: 2px; }
+        .msg-other { align-self: flex-start; }
         .msg-other .msg-bubble { background: white; border-bottom-left-radius: 2px; color: #000;}
-        .msg-avatar-img { width: 35px; height: 35px; border-radius: 50%; border: 2px solid #000; margin-bottom: 4px; object-fit: cover;}
 
-        /* ESTILOS DE LA LISTA DE CHATS (OVERLAY) */
         #chats-list-overlay {
             position: absolute; inset: 0; background: white; z-index: 100;
             display: none; flex-direction: column; padding: 20px;
@@ -96,25 +86,20 @@
         }
         .contact-item:hover { background: var(--secondary); transform: scale(1.02); }
         .contact-item img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #000; }
-        .contact-info { font-weight: 900; font-size: 1.1rem; }
 
-        .input-bar { background: white; border-top: 5px solid #000; padding: 10px; display: flex; align-items: center; gap: 8px; width: 100%; flex-shrink: 0; z-index: 10;}
-        .input-field { flex: 1; min-width: 0; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-family: inherit; font-weight: 700; font-size: 1rem; outline: none;}
-        .btn-action, .btn-enviar-msg { flex-shrink: 0; }
+        .input-bar { background: white; border-top: 5px solid #000; padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .input-field { flex: 1; min-width: 0; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-family: inherit; font-weight: 700; outline: none;}
         .btn-action { background: var(--secondary); border: 3px solid #000; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 3px 3px 0px #000; }
-        .btn-enviar-msg { background: var(--primary); color: white; border: 3px solid #000; padding: 0 15px; height: 45px; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 1.1rem; box-shadow: 3px 3px 0px #000; display: flex; align-items: center; justify-content: center; }
+        .btn-enviar-msg { background: var(--primary); color: white; border: 3px solid #000; padding: 0 15px; height: 45px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px #000; }
 
-        .popup-panel { background: #f9f9f9; border-top: 4px solid #000; display: none; height: 320px; flex-shrink: 0; overflow-y: auto; padding: 10px;}
+        .popup-panel { background: #f9f9f9; border-top: 4px solid #000; display: none; height: 320px; overflow-y: auto; padding: 10px;}
         .popup-panel.active { display: flex; flex-direction: column; }
-        
-        emoji-picker { width: 100%; height: 300px; --background: #f9f9f9; --border-color: #000; --indicator-color: var(--primary); }
-
-        .grid-sticker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center; margin-top: 10px;}
+        .grid-sticker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center; }
         .sticker-item { width: 100%; height: 90px; object-fit: cover; border-radius: 10px; border: 2px solid #000; cursor: pointer; background: white; }
 
-        .media-menu { background: white; border-top: 4px solid #000; padding: 15px; display: none; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 250px; overflow-y: auto;}
+        .media-menu { background: white; border-top: 4px solid #000; padding: 15px; display: none; flex-direction: column; gap: 10px; }
         .media-menu.show { display: flex; }
-        .media-opt { background: #eee; border: 2px solid #000; padding: 12px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; text-align: left; font-size: 1.1rem; }
+        .media-opt { background: #eee; border: 2px solid #000; padding: 12px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; }
 
         #toast-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
         .toast-notif { background: var(--secondary); border: 3px solid #000; padding: 10px 15px; border-radius: 15px; box-shadow: 5px 5px 0px #000; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 900; animation: fadeInUp 0.3s forwards; }
@@ -127,9 +112,9 @@
     <div id="toast-container"></div>
 
     <div id="login-screen">
-        <h1 class="title" style="margin-bottom: 20px;">✨ CHAP OTAKU ✨</h1>
+        <h1 class="title" style="margin-bottom: 20px;">✨ WASUCHAT ✨</h1>
         <label for="avatar-input" class="avatar-upload-container">
-            <img id="avatar-preview" class="avatar-preview" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Gremio">
+            <img id="avatar-preview" class="avatar-preview" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Wasu">
             <div class="avatar-badge">📷</div>
         </label>
         <input type="file" id="avatar-input" hidden accept="image/*" onchange="comprimirYMostrarAvatar(event)">
@@ -138,10 +123,10 @@
     </div>
 
     <header id="app-header">
-        <div class="title" style="font-size: 1.2rem;">✨ CHAP OTAKU ✨</div>
+        <div class="title" style="font-size: 1.2rem;">✨ WASUCHAT ✨</div>
         <div style="display: flex; align-items: center; gap: 10px;">
             <div id="user-info" style="display: flex; align-items: center; gap: 10px; font-weight: 800;"></div>
-            <button class="btn-salir" onclick="salirGremio()">Salir</button>
+            <button onclick="salirGremio()" style="background:#ff3333; color:white; border:2px solid #000; padding:5px 10px; border-radius:8px; font-weight:900; cursor:pointer;">Salir</button>
         </div>
     </header>
 
@@ -189,8 +174,8 @@
         firebase.initializeApp(firebaseConfig);
         const storage = firebase.storage();
 
+        // CONEXIÓN RENDER
         const socket = io('https://servidor-otaku.onrender.com');
-        const TENOR_API_KEY = "LIVDSRZULELA";
 
         let localUid = localStorage.getItem('otaku_uid') || 'user_' + Math.random().toString(36).substr(2, 9);
         let userAlias = localStorage.getItem('otaku_alias');
@@ -198,23 +183,14 @@
         let currentChatMode = "global";
         let targetUid = "";
         let mensajesGlobales = [];
-        let chatsPrivados = {}; // ESTRUCTURA: { uid: { nombre, foto, msgs[] } }
-
-        const userColors = ['#e6005c', '#0099ff', '#00cc66', '#ff6600', '#9900ff'];
-        function getColorFromName(uid) {
-            let hash = 0; for (let i = 0; i < uid.length; i++) hash = uid.charCodeAt(i) + ((hash << 5) - hash);
-            return userColors[Math.abs(hash) % userColors.length];
-        }
+        let chatsPrivados = {}; 
 
         window.onload = () => { if (userAlias) mostrarInterfazPrincipal(); };
 
         function comprimirYMostrarAvatar(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
-            reader.onload = (e) => { 
-                document.getElementById('avatar-preview').src = e.target.result;
-                userPhoto = e.target.result; 
-            };
+            reader.onload = (e) => { document.getElementById('avatar-preview').src = e.target.result; userPhoto = e.target.result; };
             reader.readAsDataURL(file);
         }
 
@@ -233,29 +209,25 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-header').style.display = 'flex';
             document.getElementById('main-content').style.display = 'flex';
-            document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" class="msg-avatar-img" style="margin:0;">`;
+            document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" style="width:35px;height:35px;border-radius:50%;border:2px solid #000;object-fit:cover;">`;
             socket.emit('registrar_usuario', { uid: localUid, alias: userAlias });
             cambiarAChatGlobal();
         }
 
         function salirGremio() { localStorage.clear(); window.location.reload(); }
 
-        // --- MANEJO DE MENSAJES ---
         socket.on('historial_global', (h) => { mensajesGlobales = h; if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); });
         socket.on('nuevo_mensaje_global', (m) => { mensajesGlobales.push(m); if(currentChatMode === 'global') renderizarUnMensaje(m); });
 
         socket.on('nuevo_mensaje_privado', (msg) => {
             const otroUid = msg.uid === localUid ? msg.targetUid : msg.uid;
-            
-            // Si el chat no existe, lo creamos para la lista
             if(!chatsPrivados[otroUid]) {
                 chatsPrivados[otroUid] = { 
-                    nombre: (msg.uid === localUid) ? "Chat Privado" : msg.autorNombre,
-                    foto: (msg.uid === localUid) ? "https://cdn-icons-png.flaticon.com/512/149/149071.png" : msg.autorFoto,
+                    nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre,
+                    foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto,
                     msgs: [] 
                 };
             }
-            
             chatsPrivados[otroUid].msgs.push(msg);
             if(currentChatMode === 'privado' && targetUid === otroUid) renderizarUnMensaje(msg);
         });
@@ -264,22 +236,20 @@
             if (currentChatMode !== "privado" || targetUid !== data.deUid) {
                 document.getElementById('audio-notif').play().catch(e=>e);
                 const toast = document.createElement('div'); toast.className = 'toast-notif';
-                toast.innerHTML = `<img src="${data.deFoto}" style="width:30px;height:30px;border-radius:50%;border:2px solid #000;"> <span>NUEVO PRIVADO DE ${data.deNombre}</span>`;
+                toast.innerHTML = `<img src="${data.deFoto}" style="width:30px;height:30px;border-radius:50%;border:2px solid #000;"> <span>NUEVO MENSAJE DE ${data.deNombre}</span>`;
                 toast.onclick = () => { abrirPrivado(data.deUid, data.deNombre); toast.remove(); };
                 document.getElementById('toast-container').appendChild(toast);
                 setTimeout(() => toast.remove(), 4000);
             }
         });
 
-        // --- FUNCIONES DE LA LISTA DE CHATS ---
         function toggleChatsList(show) {
             const overlay = document.getElementById('chats-list-overlay');
             const container = document.getElementById('contacts-container');
             if(show) {
                 container.innerHTML = '';
                 const uids = Object.keys(chatsPrivados);
-                if(uids.length === 0) container.innerHTML = '<p style="text-align:center; font-weight:700; margin-top:20px;">No tienes chats activos aún... 🌸</p>';
-                
+                if(uids.length === 0) container.innerHTML = '<p style="text-align:center; font-weight:700; margin-top:20px;">No hay chats... 🌸</p>';
                 uids.forEach(uid => {
                     const info = chatsPrivados[uid];
                     const item = document.createElement('div');
@@ -289,9 +259,7 @@
                     container.appendChild(item);
                 });
                 overlay.classList.add('active');
-            } else {
-                overlay.classList.remove('active');
-            }
+            } else { overlay.classList.remove('active'); }
         }
 
         function cambiarAChatGlobal() {
@@ -300,24 +268,21 @@
             document.getElementById('btn-regresar').style.display = "none";
             document.getElementById('btn-chats').style.display = "block";
             renderizarPantalla(mensajesGlobales);
-            cerrarTodosPaneles();
         }
 
         function abrirPrivado(uid, nombre) {
-            if (uid === localUid) return; 
             currentChatMode = "privado"; targetUid = uid;
             document.getElementById('titulo-sala').innerText = "🔒 " + nombre.toUpperCase();
             document.getElementById('btn-regresar').style.display = "block";
             document.getElementById('btn-chats').style.display = "none";
             if(!chatsPrivados[uid]) chatsPrivados[uid] = { nombre: nombre, foto: '', msgs: [] };
             renderizarPantalla(chatsPrivados[uid].msgs);
-            cerrarTodosPaneles();
         }
 
         function renderizarPantalla(lista) {
             const box = document.getElementById('messages-box'); box.innerHTML = '';
             lista.forEach(m => renderizarUnMensaje(m, false));
-            scrollToBottom();
+            box.scrollTop = box.scrollHeight;
         }
 
         function renderizarUnMensaje(d, scroll = true) {
@@ -325,19 +290,14 @@
             const isMe = d.uid === localUid;
             let content = d.text;
             if (d.type === 'image' || d.type === 'sticker') content = `<img src="${d.text}" style="width:100%; border-radius:10px; border:2px solid #000;">`;
-            
             box.innerHTML += `<div class="msg-container ${isMe ? 'msg-own' : 'msg-other'}">
-                ${!isMe ? `<span style="font-size:0.75rem; font-weight:900; margin-bottom:2px; cursor:pointer; color:${getColorFromName(d.uid)}" onclick="abrirPrivado('${d.uid}','${d.autorNombre}')">${d.autorNombre}</span>` : ''}
+                ${!isMe ? `<span style="font-size:0.75rem; font-weight:900; margin-bottom:2px; cursor:pointer;" onclick="abrirPrivado('${d.uid}','${d.autorNombre}')">${d.autorNombre}</span>` : ''}
                 <div class="msg-bubble">${content}</div>
             </div>`;
-            if(scroll) scrollToBottom();
+            if(scroll) box.scrollTop = box.scrollHeight;
         }
 
-        function scrollToBottom() { const box = document.getElementById('messages-box'); box.scrollTop = box.scrollHeight; }
-
         function enviarTextoBoton() { enviarCore(document.getElementById('chat-input').value, 'text'); }
-        document.getElementById('chat-input').addEventListener('keypress', (e) => { if (e.key === 'Enter') enviarTextoBoton(); });
-
         function enviarCore(content, type) {
             if (!content.trim()) return;
             const data = { text: content, type: type, uid: localUid, autorNombre: userAlias, autorFoto: userPhoto };
@@ -349,17 +309,16 @@
 
         function subirImagen(input) {
             const file = input.files[0]; if (!file) return;
-            const task = storage.ref(`chats/${Date.now()}`).put(file);
+            const task = storage.ref(`wasuchat/${Date.now()}`).put(file);
             task.on('state_changed', null, null, () => {
                 task.snapshot.ref.getDownloadURL().then(url => enviarCore(url, 'image'));
             });
         }
 
         function cerrarTodosPaneles() { document.getElementById('global-popups').classList.remove('active'); document.getElementById('global-media-menu').classList.remove('show'); }
-        function toggleMenu(menuName) {
-            const popups = document.getElementById('global-popups'); const mediaMenu = document.getElementById('global-media-menu');
-            if (menuName === 'media') { popups.classList.remove('active'); mediaMenu.classList.toggle('show'); } 
-            else { mediaMenu.classList.remove('show'); togglePopupInside('emoji'); }
+        function toggleMenu(m) {
+            if (m === 'media') document.getElementById('global-media-menu').classList.toggle('show');
+            else togglePopupInside('emoji');
         }
 
         function togglePopupInside(type) {
@@ -369,13 +328,13 @@
                 picker.addEventListener('emoji-click', e => document.getElementById('chat-input').value += e.detail.unicode);
                 panel.appendChild(picker);
             } else {
-                panel.innerHTML = `<div class="grid-sticker" id="giphy-results"></div>`;
-                fetch(`https://g.tenor.com/v1/search?q=anime&key=${TENOR_API_KEY}&limit=12`)
+                panel.innerHTML = `<div class="grid-sticker" id="g-res"></div>`;
+                fetch(`https://g.tenor.com/v1/search?q=anime&key=LIVDSRZULELA&limit=12`)
                 .then(r => r.json()).then(data => {
                     data.results.forEach(gif => {
                         const img = document.createElement('img'); img.src = gif.media[0].gif.url; img.className = 'sticker-item';
                         img.onclick = () => { enviarCore(img.src, 'sticker'); cerrarTodosPaneles(); };
-                        document.getElementById('giphy-results').appendChild(img);
+                        document.getElementById('g-res').appendChild(img);
                     });
                 });
             }
