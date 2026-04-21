@@ -60,6 +60,32 @@
         }
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
+        
+        /* --------------------------------------------------- */
+        /* NUEVO: ESTILOS WASUTOK (SIN BORRAR NADA DEL CHAT)   */
+        /* --------------------------------------------------- */
+        #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
+        #wasutok-feed { display: flex; flex-direction: column; }
+        .v-tok-container { width: 100%; height: calc(100vh - 70px); scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; }
+        .v-tok-video { width: 100%; height: 100%; object-fit: contain; }
+        .v-tok-info { position: absolute; bottom: 30px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; pointer-events: none; z-index: 10; }
+        .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); }
+
+        #bottom-nav { background: #fff; border-top: 5px solid #000; height: 70px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 900; font-size: 0.8rem; color: #666; transition: 0.2s; }
+        .nav-btn.active { color: var(--primary); transform: scale(1.1); }
+        .nav-btn i { font-size: 1.5rem; font-style: normal; margin-bottom: 3px; }
+
+        #btn-upload-tok { 
+            position: fixed; bottom: 90px; right: 20px; 
+            background: var(--accent); border: 3px solid #000; 
+            width: 60px; height: 60px; border-radius: 50%; 
+            font-size: 2rem; font-weight: 900; 
+            display: none; align-items: center; justify-content: center; 
+            box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer;
+        }
+        /* --------------------------------------------------- */
+
         #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-glass); width: 100%; height: 100%; }
         
         .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #000;}
@@ -131,6 +157,10 @@
     </header>
 
     <div id="main-content">
+        <section id="wasutok-section">
+            <div id="wasutok-feed"></div>
+        </section>
+
         <div id="chats-list-overlay">
             <div class="list-header">
                 <h2 style="font-weight: 900;">📩 MIS CHATS</h2>
@@ -165,6 +195,14 @@
             <input type="file" id="img-input" hidden accept="image/*" onchange="subirImagen(this)">
         </section>
     </div>
+
+    <div id="btn-upload-tok" onclick="document.getElementById('video-input').click()">➕</div>
+    <input type="file" id="video-input" hidden accept="video/*" onchange="subirVideoTok(this)">
+
+    <nav id="bottom-nav">
+        <div class="nav-btn" onclick="switchTab('wasutok')" id="tab-wasutok"><i>🎬</i>WASUTOK</div>
+        <div class="nav-btn active" onclick="switchTab('chat')" id="tab-chat"><i>💬</i>CHAT</div>
+    </nav>
 
     <script>
         const firebaseConfig = {
@@ -209,6 +247,8 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-header').style.display = 'flex';
             document.getElementById('main-content').style.display = 'flex';
+            document.getElementById('bottom-nav').style.display = 'flex'; // MOSTRAR BARRA INFERIOR
+            
             document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" style="width:35px;height:35px;border-radius:50%;border:2px solid #000;object-fit:cover;">`;
             socket.emit('registrar_usuario', { uid: localUid, alias: userAlias });
             cambiarAChatGlobal();
@@ -216,8 +256,93 @@
 
         function salirGremio() { localStorage.clear(); window.location.reload(); }
 
-        socket.on('historial_global', (h) => { mensajesGlobales = h; if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); });
-        socket.on('nuevo_mensaje_global', (m) => { mensajesGlobales.push(m); if(currentChatMode === 'global') renderizarUnMensaje(m); });
+        // -----------------------------------------------------------
+        // LÓGICA DE PESTAÑAS (WASUTOK vs CHAT)
+        // -----------------------------------------------------------
+        function switchTab(tab) {
+            if(tab === 'wasutok') {
+                document.getElementById('chat-container').style.display = 'none';
+                document.getElementById('wasutok-section').style.display = 'block';
+                document.getElementById('tab-wasutok').classList.add('active');
+                document.getElementById('tab-chat').classList.remove('active');
+                document.getElementById('btn-upload-tok').style.display = 'flex';
+                cerrarTodosPaneles();
+            } else {
+                document.getElementById('chat-container').style.display = 'flex';
+                document.getElementById('wasutok-section').style.display = 'none';
+                document.getElementById('tab-chat').classList.add('active');
+                document.getElementById('tab-wasutok').classList.remove('active');
+                document.getElementById('btn-upload-tok').style.display = 'none';
+                scrollToBottom();
+            }
+        }
+
+        // -----------------------------------------------------------
+        // LÓGICA DE SUBIR VIDEO TIKTOK (FIREBASE STORAGE)
+        // -----------------------------------------------------------
+        async function subirVideoTok(input) {
+            const file = input.files[0];
+            if(!file) return;
+            if(file.size > 20000000) return alert("Video demasiado grande (Máx 20MB)");
+
+            const btn = document.getElementById('btn-upload-tok');
+            btn.innerText = "⏳";
+            
+            try {
+                const ref = storage.ref(`wasutok/${Date.now()}_${file.name}`);
+                await ref.put(file);
+                const url = await ref.getDownloadURL();
+                
+                socket.emit('mensaje_global', { 
+                    text: url, 
+                    type: 'video_tok', 
+                    uid: localUid, 
+                    autorNombre: userAlias,
+                    autorFoto: userPhoto
+                });
+                alert("¡Video compartido en WasuTok!");
+            } catch (e) { alert("Error al subir el video"); }
+            btn.innerText = "➕";
+        }
+
+        function agregarVideoFeed(m, isNew = false) {
+            const feed = document.getElementById('wasutok-feed');
+            const html = `
+                <div class="v-tok-container">
+                    <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()"></video>
+                    <div class="v-tok-info">
+                        <div class="v-tok-name">@${m.autorNombre.toUpperCase()}</div>
+                        <div>🎬 ¡Mira mi nuevo video en WasuChat!</div>
+                    </div>
+                </div>`;
+            if(isNew) feed.insertAdjacentHTML('afterbegin', html);
+            else feed.insertAdjacentHTML('beforeend', html);
+        }
+
+        // -----------------------------------------------------------
+        // TU LÓGICA DE SOCKETS Y CHAT (INTACTA)
+        // -----------------------------------------------------------
+        socket.on('historial_global', (h) => { 
+            // Separar videos de los mensajes de chat para no romper tu sala global
+            mensajesGlobales = h.filter(m => m.type !== 'video_tok');
+            const videosTok = h.filter(m => m.type === 'video_tok');
+            
+            if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); 
+            
+            // Renderizar los videos guardados en WasuTok
+            const feed = document.getElementById('wasutok-feed');
+            feed.innerHTML = '';
+            videosTok.reverse().forEach(v => agregarVideoFeed(v));
+        });
+
+        socket.on('nuevo_mensaje_global', (m) => { 
+            if(m.type === 'video_tok') {
+                agregarVideoFeed(m, true); // Añadir al feed de videos
+            } else {
+                mensajesGlobales.push(m); 
+                if(currentChatMode === 'global') renderizarUnMensaje(m); 
+            }
+        });
 
         socket.on('nuevo_mensaje_privado', (msg) => {
             const otroUid = msg.uid === localUid ? msg.targetUid : msg.uid;
@@ -254,7 +379,7 @@
                     const info = chatsPrivados[uid];
                     const item = document.createElement('div');
                     item.className = 'contact-item';
-                    item.innerHTML = `<img src="${info.foto}"> <div class="contact-info">${info.nombre}</div>`;
+                    item.innerHTML = `<img src="${info.foto}"> <div class="contact-info" style="font-weight:900; font-size:1.1rem;">${info.nombre}</div>`;
                     item.onclick = () => { abrirPrivado(uid, info.nombre); toggleChatsList(false); };
                     container.appendChild(item);
                 });
