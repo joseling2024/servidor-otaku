@@ -36,13 +36,21 @@
         .v-tok-video { width: 100%; height: 100%; object-fit: contain; }
         .v-tok-info { position: absolute; bottom: 30px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; z-index: 10; }
         
-        /* NOMBRE CLICKEABLE */
         .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 2px solid var(--secondary); }
         .v-tok-name:active { transform: scale(0.95); background: var(--primary); border-color: #000; }
 
-        /* BOTÓN ELIMINAR VIDEO */
-        .btn-delete-vid { position: absolute; right: 15px; top: 15px; background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 20; box-shadow: 3px 3px 0px #000; }
-        .btn-delete-vid:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px #000; }
+        /* NUEVO: BARRA LATERAL DE ACCIONES (TikTok Style) */
+        .v-tok-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
+        
+        /* BOTÓN ME GUSTA */
+        .btn-like { background: rgba(0,0,0,0.6); color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 2px 2px 0px #000; }
+        .btn-like i { font-style: normal; font-size: 1.2rem; margin-bottom: -2px; }
+        .btn-like span { font-size: 0.75rem; font-weight: 900; }
+        .btn-like.liked { background: var(--primary); transform: scale(1.1); box-shadow: 0px 0px 10px var(--primary); border-color: #fff; }
+        
+        /* BOTÓN ELIMINAR */
+        .btn-delete-vid { background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 2px 2px 0px #000; }
+        .btn-delete-vid:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
 
         #bottom-nav { background: #fff; border-top: 5px solid #000; height: 70px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 900; font-size: 0.8rem; color: #666; transition: 0.2s; }
@@ -158,7 +166,7 @@
 
     <script>
         // ==========================================
-        // ⚙️ TUS DATOS DE CLOUDINARY YA CONFIGURADOS
+        // ⚙️ TUS DATOS DE CLOUDINARY
         // ==========================================
         const CLOUDINARY_CLOUD_NAME = "drfsm6hr0"; 
         const CLOUDINARY_UPLOAD_PRESET = "wasu_preset"; 
@@ -173,6 +181,10 @@
         let targetUid = "";
         let mensajesGlobales = [];
         let chatsPrivados = {}; 
+        
+        // Memoria local de Likes
+        let misLikes = JSON.parse(localStorage.getItem('mis_likes_wasu')) || [];
+        let conteoLikes = {}; // Objeto que guarda el número de likes por URL de video
 
         window.onload = () => { if (userAlias) mostrarInterfazPrincipal(); };
 
@@ -263,23 +275,48 @@
             if(tipo === 'video_tok') btn.innerText = "➕";
         }
 
-        // ==========================================
-        // 🗑️ LÓGICA PARA ELIMINAR VIDEO
-        // ==========================================
         function eliminarVideo(url) {
             if(confirm("¿Seguro que quieres eliminar este video?")) {
-                // Le avisamos a todos que borren este video
                 socket.emit('mensaje_global', { text: url, type: 'delete_video', uid: localUid, autorNombre: userAlias });
-                
-                // Lo borramos de nuestra propia pantalla al instante
                 const videos = document.querySelectorAll(`.v-tok-container[data-url="${url}"]`);
                 videos.forEach(v => v.remove());
             }
         }
 
+        // ==========================================
+        // ❤️ LÓGICA DE ME GUSTA
+        // ==========================================
+        function darMeGusta(url) {
+            if(misLikes.includes(url)) return; // Si ya dio like, no hace nada
+            
+            misLikes.push(url);
+            localStorage.setItem('mis_likes_wasu', JSON.stringify(misLikes));
+            
+            // Actualizamos la pantalla al instante sumando 1
+            actualizarDOM_Like(url, (conteoLikes[url] || 0) + 1);
+            
+            // Avisamos al servidor para que actualice a los demás
+            socket.emit('mensaje_global', { text: url, type: 'like_video', uid: localUid, autorNombre: userAlias });
+        }
+
+        function actualizarDOM_Like(url, total) {
+            conteoLikes[url] = total; // Guardar el conteo
+            const contenedores = document.querySelectorAll(`.v-tok-container[data-url="${url}"]`);
+            contenedores.forEach(c => {
+                const countSpan = c.querySelector('.like-count');
+                const btnLike = c.querySelector('.btn-like');
+                if(countSpan) countSpan.innerText = total;
+                // Pinta de rosa si ya le dio like
+                if(misLikes.includes(url) && btnLike) btnLike.classList.add('liked');
+            });
+        }
+        // ==========================================
+
         function agregarVideoFeed(m, isNew = false) {
             const feed = document.getElementById('wasutok-feed');
-            const isMe = m.uid === localUid; // Verificamos si el video es nuestro
+            const isMe = m.uid === localUid; 
+            const likesActuales = conteoLikes[m.text] || 0;
+            const hasLiked = misLikes.includes(m.text) ? 'liked' : '';
 
             const html = `
             <div class="v-tok-container" data-url="${m.text}">
@@ -290,7 +327,14 @@
                     </div>
                     <div>🎬 ¡Mira mi nuevo video!</div>
                 </div>
-                ${isMe ? `<div class="btn-delete-vid" onclick="eliminarVideo('${m.text}')">🗑️</div>` : ''}
+                
+                <div class="v-tok-actions">
+                    <div class="btn-like ${hasLiked}" onclick="darMeGusta('${m.text}')">
+                        <i>❤️</i>
+                        <span class="like-count">${likesActuales}</span>
+                    </div>
+                    ${isMe ? `<div class="btn-delete-vid" onclick="eliminarVideo('${m.text}')">🗑️</div>` : ''}
+                </div>
             </div>`;
             
             if(isNew) feed.insertAdjacentHTML('afterbegin', html);
@@ -298,13 +342,18 @@
         }
 
         socket.on('historial_global', (h) => { 
-            // Filtramos los videos que han sido eliminados por sus dueños
             const eliminados = h.filter(m => m.type === 'delete_video').map(m => m.text);
-            
-            mensajesGlobales = h.filter(m => m.type !== 'video_tok' && m.type !== 'delete_video');
+            mensajesGlobales = h.filter(m => m.type !== 'video_tok' && m.type !== 'delete_video' && m.type !== 'like_video');
             const videosTok = h.filter(m => m.type === 'video_tok' && !eliminados.includes(m.text));
             
+            // Procesar historial de likes antes de dibujar videos
+            conteoLikes = {};
+            h.filter(m => m.type === 'like_video').forEach(l => {
+                conteoLikes[l.text] = (conteoLikes[l.text] || 0) + 1;
+            });
+            
             if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); 
+            
             const feed = document.getElementById('wasutok-feed');
             feed.innerHTML = '';
             videosTok.reverse().forEach(v => agregarVideoFeed(v));
@@ -314,9 +363,13 @@
             if(m.type === 'video_tok') {
                 agregarVideoFeed(m, true);
             } else if (m.type === 'delete_video') {
-                // Alguien eliminó su video, lo quitamos del DOM
                 const videos = document.querySelectorAll(`.v-tok-container[data-url="${m.text}"]`);
                 videos.forEach(v => v.remove());
+            } else if (m.type === 'like_video') {
+                // Alguien le dio like, sumar 1 si no fui yo (yo ya lo sumé)
+                if(m.uid !== localUid) {
+                    actualizarDOM_Like(m.text, (conteoLikes[m.text] || 0) + 1);
+                }
             } else {
                 mensajesGlobales.push(m); 
                 if(currentChatMode === 'global') renderizarUnMensaje(m); 
@@ -378,7 +431,6 @@
             if(!chatsPrivados[uid]) chatsPrivados[uid] = { nombre: nombre, foto: '', msgs: [] };
             renderizarPantalla(chatsPrivados[uid].msgs);
             
-            // Si le dieron click desde WasuTok, los pasamos automáticamente a la pestaña Chat
             switchTab('chat');
         }
 
