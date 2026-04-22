@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WasuChat | Premium Chat</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <title>WasuChat | WasuTok Edition</title>
     
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -15,55 +12,23 @@
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        :root {
-            --primary: #ff007f;
-            --secondary: #00f2ff;
-            --accent: #ffff00;
-            --bg-glass: rgba(255, 255, 255, 0.95);
-            --border: 4px solid #000;
-        }
-
-        body {
-            background: linear-gradient(-45deg, #ff99cc, #ffcce6, #66ffff, #b3ffff);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-            color: #222; font-family: 'M PLUS Rounded 1c', sans-serif; 
-            height: 100vh; height: 100dvh; 
-            display: flex; flex-direction: column; overflow: hidden;
-        }
-
+        :root { --primary: #ff007f; --secondary: #00f2ff; --accent: #ffff00; --bg-glass: rgba(255, 255, 255, 0.95); --border: 4px solid #000; }
+        body { background: linear-gradient(-45deg, #ff99cc, #ffcce6, #66ffff, #b3ffff); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: #222; font-family: 'M PLUS Rounded 1c', sans-serif; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
         @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
-        /* PANTALLA DE INGRESO */
         #login-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .avatar-upload-container { position: relative; margin-bottom: 20px; cursor: pointer; transition: transform 0.2s; }
         .avatar-preview { width: 130px; height: 130px; border-radius: 50%; border: 5px solid #000; object-fit: cover; background: #eee; box-shadow: 5px 5px 0px var(--primary); }
         .avatar-badge { position: absolute; bottom: 0; right: 0; background: var(--secondary); border: 3px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 2px 2px 0px #000; }
-        
         .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
+        .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; }
         
-        .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; transition: 0.2s; }
-        .btn-entrar:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px #000; }
-
         header { background: white; border-bottom: 5px solid #000; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
-        
-        .title { 
-            font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; 
-            text-transform: uppercase; letter-spacing: 2px; display: inline-block;
-            animation: fiestaWasu 1.5s infinite alternate ease-in-out;
-        }
-
-        @keyframes fiestaWasu {
-            0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
-            50% { transform: scale(1.15) translateY(-4px) rotate(3deg); color: #00f2ff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 6px 6px 0 #000; }
-            100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
-        }
+        .title { font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; text-transform: uppercase; animation: fiestaWasu 1.5s infinite alternate ease-in-out; }
+        @keyframes fiestaWasu { 0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; } 100% { transform: scale(1.05) translateY(2px) rotate(3deg); color: #00f2ff; } }
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         
-        /* --------------------------------------------------- */
-        /* NUEVO: ESTILOS WASUTOK (SIN BORRAR NADA DEL CHAT)   */
-        /* --------------------------------------------------- */
         #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
         #wasutok-feed { display: flex; flex-direction: column; }
         .v-tok-container { width: 100%; height: calc(100vh - 70px); scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; }
@@ -76,21 +41,12 @@
         .nav-btn.active { color: var(--primary); transform: scale(1.1); }
         .nav-btn i { font-size: 1.5rem; font-style: normal; margin-bottom: 3px; }
 
-        #btn-upload-tok { 
-            position: fixed; bottom: 90px; right: 20px; 
-            background: var(--accent); border: 3px solid #000; 
-            width: 60px; height: 60px; border-radius: 50%; 
-            font-size: 2rem; font-weight: 900; 
-            display: none; align-items: center; justify-content: center; 
-            box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer;
-        }
-        /* --------------------------------------------------- */
+        #btn-upload-tok { position: fixed; bottom: 90px; right: 20px; background: var(--accent); border: 3px solid #000; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; font-weight: 900; display: none; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer; }
 
         #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-glass); width: 100%; height: 100%; }
-        
-        .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #000;}
-        .btn-regresar { background: var(--accent); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; display: none; }
-        .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; border-bottom: 4px solid #000;}
+        .btn-regresar, .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .btn-regresar { background: var(--accent); display: none; }
 
         #messages-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .msg-bubble { padding: 10px 15px; border: 3px solid #000; border-radius: 15px; font-weight: 700; position: relative; box-shadow: 4px 4px 0px #000; word-wrap: break-word; font-size: 1rem;}
@@ -99,22 +55,13 @@
         .msg-other { align-self: flex-start; }
         .msg-other .msg-bubble { background: white; border-bottom-left-radius: 2px; color: #000;}
 
-        #chats-list-overlay {
-            position: absolute; inset: 0; background: white; z-index: 100;
-            display: none; flex-direction: column; padding: 20px;
-        }
+        #chats-list-overlay { position: absolute; inset: 0; background: white; z-index: 100; display: none; flex-direction: column; padding: 20px; }
         #chats-list-overlay.active { display: flex; }
-        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 4px solid #000; padding-bottom: 10px; }
-        .contact-item {
-            display: flex; align-items: center; gap: 15px; padding: 12px;
-            border: 3px solid #000; border-radius: 15px; margin-bottom: 10px;
-            cursor: pointer; transition: 0.2s; background: #f9f9f9;
-        }
-        .contact-item:hover { background: var(--secondary); transform: scale(1.02); }
+        .contact-item { display: flex; align-items: center; gap: 15px; padding: 12px; border: 3px solid #000; border-radius: 15px; margin-bottom: 10px; cursor: pointer; background: #f9f9f9; }
         .contact-item img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #000; }
 
         .input-bar { background: white; border-top: 5px solid #000; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .input-field { flex: 1; min-width: 0; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-family: inherit; font-weight: 700; outline: none;}
+        .input-field { flex: 1; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-weight: 700; outline: none;}
         .btn-action { background: var(--secondary); border: 3px solid #000; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 3px 3px 0px #000; }
         .btn-enviar-msg { background: var(--primary); color: white; border: 3px solid #000; padding: 0 15px; height: 45px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px #000; }
 
@@ -177,27 +124,24 @@
                     <button id="btn-regresar" class="btn-regresar" onclick="cambiarAChatGlobal()">🌍 VOLVER</button>
                 </div>
             </div>
-
             <div id="messages-box"></div>
-            
             <div class="input-bar">
                 <button class="btn-action" onclick="toggleMenu('media')">➕</button>
                 <button class="btn-action" style="background:var(--accent)" onclick="toggleMenu('emoji')">😀</button>
                 <input type="text" id="chat-input" class="input-field" placeholder="Escribe..." autocomplete="off">
                 <button class="btn-enviar-msg" onclick="enviarTextoBoton()">➤</button>
             </div>
-
             <div id="global-popups" class="popup-panel"></div>
             <div id="global-media-menu" class="media-menu">
                 <div class="media-opt" onclick="togglePopupInside('sticker')">🌟 Buscar GIFs</div>
                 <div class="media-opt" onclick="document.getElementById('img-input').click()">🖼️ Subir Foto</div>
             </div>
-            <input type="file" id="img-input" hidden accept="image/*" onchange="subirImagen(this)">
+            <input type="file" id="img-input" hidden accept="image/*" onchange="subirArchivoCloudinary(this, 'image')">
         </section>
     </div>
 
     <div id="btn-upload-tok" onclick="document.getElementById('video-input').click()">➕</div>
-    <input type="file" id="video-input" hidden accept="video/*" onchange="subirVideoTok(this)">
+    <input type="file" id="video-input" hidden accept="video/*" onchange="subirArchivoCloudinary(this, 'video_tok')">
 
     <nav id="bottom-nav">
         <div class="nav-btn" onclick="switchTab('wasutok')" id="tab-wasutok"><i>🎬</i>WASUTOK</div>
@@ -205,14 +149,13 @@
     </nav>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyD3OO7nMrR3Hw0c0yfgi7bZc5B5MQg-EtQ",
-            storageBucket: "chat-otaku-c7fe4.firebasestorage.app",
-        };
-        firebase.initializeApp(firebaseConfig);
-        const storage = firebase.storage();
+        // ==========================================
+        // ⚙️ TUS DATOS DE CLOUDINARY (SIN FIREBASE STORAGE)
+        // ==========================================
+        const CLOUDINARY_CLOUD_NAME = "drfsm6hr0"; 
+        const CLOUDINARY_UPLOAD_PRESET = "wasu_preset"; 
+        // ==========================================
 
-        // CONEXIÓN RENDER
         const socket = io('https://servidor-otaku.onrender.com');
 
         let localUid = localStorage.getItem('otaku_uid') || 'user_' + Math.random().toString(36).substr(2, 9);
@@ -247,8 +190,7 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-header').style.display = 'flex';
             document.getElementById('main-content').style.display = 'flex';
-            document.getElementById('bottom-nav').style.display = 'flex'; // MOSTRAR BARRA INFERIOR
-            
+            document.getElementById('bottom-nav').style.display = 'flex';
             document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" style="width:35px;height:35px;border-radius:50%;border:2px solid #000;object-fit:cover;">`;
             socket.emit('registrar_usuario', { uid: localUid, alias: userAlias });
             cambiarAChatGlobal();
@@ -256,9 +198,6 @@
 
         function salirGremio() { localStorage.clear(); window.location.reload(); }
 
-        // -----------------------------------------------------------
-        // LÓGICA DE PESTAÑAS (WASUTOK vs CHAT)
-        // -----------------------------------------------------------
         function switchTab(tab) {
             if(tab === 'wasutok') {
                 document.getElementById('chat-container').style.display = 'none';
@@ -277,59 +216,66 @@
             }
         }
 
-        // -----------------------------------------------------------
-        // LÓGICA DE SUBIR VIDEO TIKTOK (FIREBASE STORAGE)
-        // -----------------------------------------------------------
-        async function subirVideoTok(input) {
+        // ==========================================
+        // 🚀 SUBIDA DE ARCHIVOS A CLOUDINARY
+        // ==========================================
+        async function subirArchivoCloudinary(input, tipo) {
             const file = input.files[0];
             if(!file) return;
-            if(file.size > 20000000) return alert("Video demasiado grande (Máx 20MB)");
-
-            const btn = document.getElementById('btn-upload-tok');
-            btn.innerText = "⏳";
             
+            if(tipo === 'video_tok' && file.size > 20000000) return alert("Video demasiado grande (Máx 20MB)");
+            
+            let btn;
+            if(tipo === 'video_tok') {
+                btn = document.getElementById('btn-upload-tok');
+                btn.innerText = "⏳";
+            } else {
+                cerrarTodosPaneles();
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
             try {
-                const ref = storage.ref(`wasutok/${Date.now()}_${file.name}`);
-                await ref.put(file);
-                const url = await ref.getDownloadURL();
-                
-                socket.emit('mensaje_global', { 
-                    text: url, 
-                    type: 'video_tok', 
-                    uid: localUid, 
-                    autorNombre: userAlias,
-                    autorFoto: userPhoto
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
+                    method: 'POST',
+                    body: formData
                 });
-                alert("¡Video compartido en WasuTok!");
-            } catch (e) { alert("Error al subir el video"); }
-            btn.innerText = "➕";
+                const data = await res.json();
+                
+                if(data.secure_url) {
+                    enviarCore(data.secure_url, tipo);
+                    if(tipo === 'video_tok') alert("¡Video compartido en WasuTok!");
+                } else {
+                    console.error("Cloudinary Error:", data);
+                    alert("Error al subir. ¿Creaste el preset como 'Unsigned'?");
+                }
+            } catch (e) { 
+                alert("Error de red al subir el archivo."); 
+            }
+
+            if(tipo === 'video_tok') btn.innerText = "➕";
         }
+        // ==========================================
 
         function agregarVideoFeed(m, isNew = false) {
             const feed = document.getElementById('wasutok-feed');
-            const html = `
-                <div class="v-tok-container">
-                    <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()"></video>
-                    <div class="v-tok-info">
-                        <div class="v-tok-name">@${m.autorNombre.toUpperCase()}</div>
-                        <div>🎬 ¡Mira mi nuevo video en WasuChat!</div>
-                    </div>
-                </div>`;
+            const html = `<div class="v-tok-container">
+                <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()"></video>
+                <div class="v-tok-info">
+                    <div class="v-tok-name">@${m.autorNombre.toUpperCase()}</div>
+                    <div>🎬 ¡Mira mi nuevo video en WasuChat!</div>
+                </div>
+            </div>`;
             if(isNew) feed.insertAdjacentHTML('afterbegin', html);
             else feed.insertAdjacentHTML('beforeend', html);
         }
 
-        // -----------------------------------------------------------
-        // TU LÓGICA DE SOCKETS Y CHAT (INTACTA)
-        // -----------------------------------------------------------
         socket.on('historial_global', (h) => { 
-            // Separar videos de los mensajes de chat para no romper tu sala global
             mensajesGlobales = h.filter(m => m.type !== 'video_tok');
             const videosTok = h.filter(m => m.type === 'video_tok');
-            
             if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); 
-            
-            // Renderizar los videos guardados en WasuTok
             const feed = document.getElementById('wasutok-feed');
             feed.innerHTML = '';
             videosTok.reverse().forEach(v => agregarVideoFeed(v));
@@ -337,7 +283,7 @@
 
         socket.on('nuevo_mensaje_global', (m) => { 
             if(m.type === 'video_tok') {
-                agregarVideoFeed(m, true); // Añadir al feed de videos
+                agregarVideoFeed(m, true);
             } else {
                 mensajesGlobales.push(m); 
                 if(currentChatMode === 'global') renderizarUnMensaje(m); 
@@ -347,11 +293,7 @@
         socket.on('nuevo_mensaje_privado', (msg) => {
             const otroUid = msg.uid === localUid ? msg.targetUid : msg.uid;
             if(!chatsPrivados[otroUid]) {
-                chatsPrivados[otroUid] = { 
-                    nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre,
-                    foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto,
-                    msgs: [] 
-                };
+                chatsPrivados[otroUid] = { nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre, foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto, msgs: [] };
             }
             chatsPrivados[otroUid].msgs.push(msg);
             if(currentChatMode === 'privado' && targetUid === otroUid) renderizarUnMensaje(msg);
@@ -377,8 +319,7 @@
                 if(uids.length === 0) container.innerHTML = '<p style="text-align:center; font-weight:700; margin-top:20px;">No hay chats... 🌸</p>';
                 uids.forEach(uid => {
                     const info = chatsPrivados[uid];
-                    const item = document.createElement('div');
-                    item.className = 'contact-item';
+                    const item = document.createElement('div'); item.className = 'contact-item';
                     item.innerHTML = `<img src="${info.foto}"> <div class="contact-info" style="font-weight:900; font-size:1.1rem;">${info.nombre}</div>`;
                     item.onclick = () => { abrirPrivado(uid, info.nombre); toggleChatsList(false); };
                     container.appendChild(item);
@@ -422,6 +363,8 @@
             if(scroll) box.scrollTop = box.scrollHeight;
         }
 
+        function scrollToBottom() { const box = document.getElementById('messages-box'); box.scrollTop = box.scrollHeight; }
+
         function enviarTextoBoton() { enviarCore(document.getElementById('chat-input').value, 'text'); }
         function enviarCore(content, type) {
             if (!content.trim()) return;
@@ -430,14 +373,6 @@
             else { data.targetUid = targetUid; socket.emit('mensaje_privado', data); }
             if (type === 'text') document.getElementById('chat-input').value = "";
             cerrarTodosPaneles();
-        }
-
-        function subirImagen(input) {
-            const file = input.files[0]; if (!file) return;
-            const task = storage.ref(`wasuchat/${Date.now()}`).put(file);
-            task.on('state_changed', null, null, () => {
-                task.snapshot.ref.getDownloadURL().then(url => enviarCore(url, 'image'));
-            });
         }
 
         function cerrarTodosPaneles() { document.getElementById('global-popups').classList.remove('active'); document.getElementById('global-media-menu').classList.remove('show'); }
