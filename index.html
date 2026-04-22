@@ -31,7 +31,6 @@
 
         @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
-        /* PANTALLA DE INGRESO */
         #login-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .avatar-upload-container { position: relative; margin-bottom: 20px; cursor: pointer; transition: transform 0.2s; }
         .avatar-preview { width: 130px; height: 130px; border-radius: 50%; border: 5px solid #000; object-fit: cover; background: #eee; box-shadow: 5px 5px 0px var(--primary); }
@@ -39,13 +38,11 @@
         
         .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
         
-        /* DISEÑO PREMIUM DEL BOTÓN */
         .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; transition: 0.2s; }
         .btn-entrar:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px #000; }
 
         header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
         
-        /* DISEÑO PREMIUM DEL TÍTULO */
         .title { 
             font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; 
             text-transform: uppercase; letter-spacing: 2px; display: inline-block;
@@ -58,7 +55,6 @@
             100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
         }
 
-        /* NAVEGACIÓN SUPERIOR TIPO PESTAÑAS */
         #top-nav { background: #fff; border-top: 2px solid #eee; border-bottom: 4px solid #000; height: 50px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
         .nav-btn { display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-weight: 900; font-size: 1rem; color: #666; transition: 0.2s; width: 100%; height: 100%; border-bottom: 4px solid transparent; }
         .nav-btn.active { color: var(--primary); border-bottom: 4px solid var(--primary); background: #fff0f5; }
@@ -66,7 +62,6 @@
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         
-        /* ESTILOS WASUTOK CON ADAPTACIÓN PARA ANDROID */
         #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
         #wasutok-feed { display: flex; flex-direction: column; height: 100%; }
         .v-tok-container { width: 100%; height: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; flex-shrink: 0; }
@@ -75,16 +70,15 @@
         .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 2px solid var(--secondary); }
         .v-tok-name:active { transform: scale(0.95); background: var(--primary); border-color: #000; }
 
-        /* BARRA LATERAL (ME GUSTA Y ELIMINAR) */
         .v-tok-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
         .btn-like { background: rgba(0,0,0,0.6); color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 2px 2px 0px #000; }
         .btn-like i { font-style: normal; font-size: 1.2rem; margin-bottom: -2px; }
         .btn-like span { font-size: 0.75rem; font-weight: 900; }
         .btn-like.liked { background: var(--primary); transform: scale(1.1); box-shadow: 0px 0px 10px var(--primary); border-color: #fff; }
+        
         .btn-delete-vid { background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 2px 2px 0px #000; }
         .btn-delete-vid:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
 
-        /* BOTÓN FLOTANTE PARA SUBIR VIDEO (EN ESQUINA INFERIOR DERECHA) */
         #btn-upload-tok { 
             position: fixed; bottom: 40px; right: 20px; 
             background: var(--accent); border: 3px solid #000; 
@@ -101,11 +95,21 @@
         .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
 
         #messages-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg-container { display: flex; flex-direction: column; max-width: 80%; }
         .msg-bubble { padding: 10px 15px; border: 3px solid #000; border-radius: 15px; font-weight: 700; position: relative; box-shadow: 4px 4px 0px #000; word-wrap: break-word; font-size: 1rem;}
         .msg-own { align-self: flex-end; align-items: flex-end; }
         .msg-own .msg-bubble { background: var(--primary); color: white; border-bottom-right-radius: 2px; }
         .msg-other { align-self: flex-start; }
         .msg-other .msg-bubble { background: white; border-bottom-left-radius: 2px; color: #000;}
+
+        /* NUEVO: BOTÓN DE ELIMINAR FOTOS EN CHAT */
+        .btn-delete-msg {
+            position: absolute; top: -10px; right: -10px;
+            background: #ff3333; color: white; border: 2px solid #000; border-radius: 50%;
+            width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;
+            font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0px #000; z-index: 5;
+        }
+        .btn-delete-msg:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
 
         #chats-list-overlay {
             position: absolute; inset: 0; background: white; z-index: 100;
@@ -114,7 +118,6 @@
         #chats-list-overlay.active { display: flex; }
         .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 4px solid #000; padding-bottom: 10px; }
         
-        /* DISEÑO PREMIUM DEL ITEM DE CONTACTO */
         .contact-item {
             display: flex; align-items: center; gap: 15px; padding: 12px;
             border: 3px solid #000; border-radius: 15px; margin-bottom: 10px;
@@ -141,7 +144,6 @@
         .toast-notif { background: var(--secondary); border: 3px solid #000; padding: 10px 15px; border-radius: 15px; box-shadow: 5px 5px 0px #000; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 900; animation: fadeInUp 0.3s forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* EL COJÍN DE SEGURIDAD PARA ANDROID */
         .android-spacer { height: 25px; width: 100%; background: white; flex-shrink: 0; }
     </style>
 </head>
@@ -221,7 +223,7 @@
 
     <script>
         // ==========================================
-        // ⚙️ TUS DATOS DE CLOUDINARY DEFINITIVOS
+        // ⚙️ TUS DATOS DE CLOUDINARY
         // ==========================================
         const CLOUDINARY_CLOUD_NAME = "drfsm6hr0"; 
         const CLOUDINARY_UPLOAD_PRESET = "wasu_preset"; 
@@ -320,7 +322,6 @@
                     enviarCore(data.secure_url, tipo);
                     if(tipo === 'video_tok') alert("¡Video compartido en WasuTok!");
                 } else {
-                    console.error("Cloudinary Error:", data);
                     alert("Error al subir. ¿Creaste el preset como 'Unsigned'?");
                 }
             } catch (e) { 
@@ -330,20 +331,24 @@
             if(tipo === 'video_tok') btn.innerText = "➕";
         }
 
-        function eliminarVideo(url) {
-            if(confirm("¿Seguro que quieres eliminar este video?")) {
-                socket.emit('mensaje_global', { text: url, type: 'delete_video', uid: localUid, autorNombre: userAlias });
-                const videos = document.querySelectorAll(`.v-tok-container[data-url="${url}"]`);
-                videos.forEach(v => v.remove());
+        // ==========================================
+        // 🗑️ LÓGICA UNIVERSAL PARA ELIMINAR (FOTOS Y VIDEOS)
+        // ==========================================
+        function eliminarContenido(url) {
+            if(confirm("¿Seguro que quieres eliminar esto para todos?")) {
+                // Le avisamos a los demás que borren este elemento
+                socket.emit('mensaje_global', { text: url, type: 'delete_content', uid: localUid, autorNombre: userAlias });
+                
+                // Lo borramos de nuestra propia pantalla al instante
+                const elementos = document.querySelectorAll(`[data-url="${url}"]`);
+                elementos.forEach(el => el.remove());
             }
         }
 
         function darMeGusta(url) {
             if(misLikes.includes(url)) return; 
-            
             misLikes.push(url);
             localStorage.setItem('mis_likes_wasu', JSON.stringify(misLikes));
-            
             actualizarDOM_Like(url, (conteoLikes[url] || 0) + 1);
             socket.emit('mensaje_global', { text: url, type: 'like_video', uid: localUid, autorNombre: userAlias });
         }
@@ -380,7 +385,7 @@
                         <i>❤️</i>
                         <span class="like-count">${likesActuales}</span>
                     </div>
-                    ${isMe ? `<div class="btn-delete-vid" onclick="eliminarVideo('${m.text}')">🗑️</div>` : ''}
+                    ${isMe ? `<div class="btn-delete-vid" onclick="eliminarContenido('${m.text}')">🗑️</div>` : ''}
                 </div>
             </div>`;
             
@@ -389,10 +394,32 @@
         }
 
         socket.on('historial_global', (h) => { 
-            const eliminados = h.filter(m => m.type === 'delete_video').map(m => m.text);
-            mensajesGlobales = h.filter(m => m.type !== 'video_tok' && m.type !== 'delete_video' && m.type !== 'like_video');
-            const videosTok = h.filter(m => m.type === 'video_tok' && !eliminados.includes(m.text));
+            // 1. Identificar archivos eliminados
+            const eliminados = h.filter(m => m.type === 'delete_video' || m.type === 'delete_content').map(m => m.text);
             
+            // 2. Extraer mensajes normales filtrando los eliminados
+            mensajesGlobales = h.filter(m => {
+                if(m.type === 'video_tok' || m.type === 'delete_video' || m.type === 'delete_content' || m.type === 'like_video') return false;
+                if(eliminados.includes(m.text)) return false;
+                return true;
+            });
+            
+            // 3. AUTO-BORRADO (Historias 48hs) y videos vigentes
+            const DOS_DIAS_EN_MILISEGUNDOS = 48 * 60 * 60 * 1000;
+            const ahora = Date.now();
+            
+            const videosTok = h.filter(m => {
+                if(m.type !== 'video_tok') return false;
+                if(eliminados.includes(m.text)) return false;
+                
+                // Si el video tiene más de 48 horas de vida, caduca y se oculta
+                const tiempoPublicado = m.timestamp || ahora; 
+                if((ahora - tiempoPublicado) > DOS_DIAS_EN_MILISEGUNDOS) return false;
+                
+                return true;
+            });
+            
+            // 4. Calcular Likes
             conteoLikes = {};
             h.filter(m => m.type === 'like_video').forEach(l => {
                 conteoLikes[l.text] = (conteoLikes[l.text] || 0) + 1;
@@ -408,9 +435,10 @@
         socket.on('nuevo_mensaje_global', (m) => { 
             if(m.type === 'video_tok') {
                 agregarVideoFeed(m, true);
-            } else if (m.type === 'delete_video') {
-                const videos = document.querySelectorAll(`.v-tok-container[data-url="${m.text}"]`);
-                videos.forEach(v => v.remove());
+            } else if (m.type === 'delete_video' || m.type === 'delete_content') {
+                // Si alguien borró una foto o video, quitarlo del DOM
+                const elementos = document.querySelectorAll(`[data-url="${m.text}"]`);
+                elementos.forEach(el => el.remove());
             } else if (m.type === 'like_video') {
                 if(m.uid !== localUid) {
                     actualizarDOM_Like(m.text, (conteoLikes[m.text] || 0) + 1);
@@ -494,22 +522,44 @@
             const box = document.getElementById('messages-box');
             const isMe = d.uid === localUid;
             let content = d.text;
-            if (d.type === 'image' || d.type === 'sticker') content = `<img src="${d.text}" style="width:100%; border-radius:10px; border:2px solid #000;">`;
-            box.innerHTML += `<div class="msg-container ${isMe ? 'msg-own' : 'msg-other'}">
+            
+            // Si es una foto o GIF, le activamos la vista especial y el botón de borrar
+            let isMedia = false;
+            let btnEliminar = '';
+            
+            if (d.type === 'image' || d.type === 'sticker') {
+                content = `<img src="${d.text}" style="width:100%; border-radius:10px; border:2px solid #000;">`;
+                isMedia = true;
+                
+                // Si la imagen la mandaste TÚ, añadimos el botón rojo de eliminar foto
+                if(isMe) {
+                    btnEliminar = `<div class="btn-delete-msg" onclick="eliminarContenido('${d.text}')">🗑️</div>`;
+                }
+            }
+
+            box.innerHTML += `<div class="msg-container ${isMe ? 'msg-own' : 'msg-other'}" data-url="${d.text}">
                 ${!isMe ? `<span style="font-size:0.75rem; font-weight:900; margin-bottom:2px; cursor:pointer;" onclick="abrirPrivado('${d.uid}','${d.autorNombre}')">${d.autorNombre}</span>` : ''}
-                <div class="msg-bubble">${content}</div>
+                <div class="msg-bubble">${content} ${btnEliminar}</div>
             </div>`;
+            
             if(scroll) box.scrollTop = box.scrollHeight;
         }
 
         function scrollToBottom() { const box = document.getElementById('messages-box'); box.scrollTop = box.scrollHeight; }
 
         function enviarTextoBoton() { enviarCore(document.getElementById('chat-input').value, 'text'); }
+        
         function enviarCore(content, type) {
             if (!content.trim()) return;
-            const data = { text: content, type: type, uid: localUid, autorNombre: userAlias, autorFoto: userPhoto };
+            // ⌚ AÑADIDO: Ahora los mensajes incluyen una "marca de tiempo" (timestamp) para el auto-borrado
+            const data = { 
+                text: content, type: type, uid: localUid, 
+                autorNombre: userAlias, autorFoto: userPhoto, timestamp: Date.now() 
+            };
+            
             if (currentChatMode === "global") socket.emit('mensaje_global', data);
             else { data.targetUid = targetUid; socket.emit('mensaje_privado', data); }
+            
             if (type === 'text') document.getElementById('chat-input').value = "";
             cerrarTodosPaneles();
         }
