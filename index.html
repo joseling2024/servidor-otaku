@@ -242,6 +242,26 @@
         let misLikes = JSON.parse(localStorage.getItem('mis_likes_wasu')) || [];
         let conteoLikes = {}; 
 
+        // 🟢 VARIABLES PARA CONTAR Y MOSTRAR ANUNCIOS 🟢
+        let contadorMensajes = 0;
+        let contadorVideos = 0;
+
+        function dispararAnuncioAndroid() {
+            // Revisa si la app está corriendo en Android, si es así, dispara el anuncio
+            if (typeof Android !== "undefined" && Android !== null) {
+                Android.mostrarAnuncio();
+            }
+        }
+
+        function contarVideo() {
+            // 🟢 REGLA 4: ANUNCIO CADA 5 VIDEOS 🟢
+            contadorVideos++;
+            if(contadorVideos >= 5) {
+                dispararAnuncioAndroid();
+                contadorVideos = 0;
+            }
+        }
+
         window.onload = () => { if (userAlias) mostrarInterfazPrincipal(); };
 
         function comprimirYMostrarAvatar(event) {
@@ -283,6 +303,10 @@
                 document.getElementById('tab-chat').classList.remove('active');
                 document.getElementById('btn-upload-tok').style.display = 'flex';
                 cerrarTodosPaneles();
+                
+                // 🟢 REGLA 3: ANUNCIO AL ABRIR LA PESTAÑA DE VIDEOS 🟢
+                dispararAnuncioAndroid();
+
             } else {
                 document.getElementById('chat-container').style.display = 'flex';
                 document.getElementById('wasutok-section').style.display = 'none';
@@ -296,7 +320,6 @@
         async function subirArchivoCloudinary(input, tipo) {
             const file = input.files[0];
             if(!file) return;
-            
             if(tipo === 'video_tok' && file.size > 20000000) return alert("Video demasiado grande (Máx 20MB)");
             
             let btn;
@@ -313,8 +336,7 @@
 
             try {
                 const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-                    method: 'POST',
-                    body: formData
+                    method: 'POST', body: formData
                 });
                 const data = await res.json();
                 
@@ -324,22 +346,14 @@
                 } else {
                     alert("Error al subir. ¿Creaste el preset como 'Unsigned'?");
                 }
-            } catch (e) { 
-                alert("Error de red al subir el archivo."); 
-            }
+            } catch (e) { alert("Error de red al subir el archivo."); }
 
             if(tipo === 'video_tok') btn.innerText = "➕";
         }
 
-        // ==========================================
-        // 🗑️ LÓGICA UNIVERSAL PARA ELIMINAR (FOTOS Y VIDEOS)
-        // ==========================================
         function eliminarContenido(url) {
             if(confirm("¿Seguro que quieres eliminar esto para todos?")) {
-                // Le avisamos a los demás que borren este elemento
                 socket.emit('mensaje_global', { text: url, type: 'delete_content', uid: localUid, autorNombre: userAlias });
-                
-                // Lo borramos de nuestra propia pantalla al instante
                 const elementos = document.querySelectorAll(`[data-url="${url}"]`);
                 elementos.forEach(el => el.remove());
             }
@@ -372,7 +386,7 @@
 
             const html = `
             <div class="v-tok-container" data-url="${m.text}">
-                <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()"></video>
+                <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()" onplay="contarVideo()"></video>
                 <div class="v-tok-info">
                     <div class="v-tok-name" onclick="abrirPrivado('${m.uid}', '${m.autorNombre}')">
                         @${m.autorNombre.toUpperCase()} 💬
@@ -394,32 +408,24 @@
         }
 
         socket.on('historial_global', (h) => { 
-            // 1. Identificar archivos eliminados
             const eliminados = h.filter(m => m.type === 'delete_video' || m.type === 'delete_content').map(m => m.text);
-            
-            // 2. Extraer mensajes normales filtrando los eliminados
             mensajesGlobales = h.filter(m => {
                 if(m.type === 'video_tok' || m.type === 'delete_video' || m.type === 'delete_content' || m.type === 'like_video') return false;
                 if(eliminados.includes(m.text)) return false;
                 return true;
             });
             
-            // 3. AUTO-BORRADO (Historias 48hs) y videos vigentes
             const DOS_DIAS_EN_MILISEGUNDOS = 48 * 60 * 60 * 1000;
             const ahora = Date.now();
             
             const videosTok = h.filter(m => {
                 if(m.type !== 'video_tok') return false;
                 if(eliminados.includes(m.text)) return false;
-                
-                // Si el video tiene más de 48 horas de vida, caduca y se oculta
                 const tiempoPublicado = m.timestamp || ahora; 
                 if((ahora - tiempoPublicado) > DOS_DIAS_EN_MILISEGUNDOS) return false;
-                
                 return true;
             });
             
-            // 4. Calcular Likes
             conteoLikes = {};
             h.filter(m => m.type === 'like_video').forEach(l => {
                 conteoLikes[l.text] = (conteoLikes[l.text] || 0) + 1;
@@ -436,7 +442,6 @@
             if(m.type === 'video_tok') {
                 agregarVideoFeed(m, true);
             } else if (m.type === 'delete_video' || m.type === 'delete_content') {
-                // Si alguien borró una foto o video, quitarlo del DOM
                 const elementos = document.querySelectorAll(`[data-url="${m.text}"]`);
                 elementos.forEach(el => el.remove());
             } else if (m.type === 'like_video') {
@@ -508,7 +513,6 @@
             document.getElementById('btn-chats').style.display = "none";
             if(!chatsPrivados[uid]) chatsPrivados[uid] = { nombre: nombre, foto: '', msgs: [] };
             renderizarPantalla(chatsPrivados[uid].msgs);
-            
             switchTab('chat');
         }
 
@@ -522,19 +526,12 @@
             const box = document.getElementById('messages-box');
             const isMe = d.uid === localUid;
             let content = d.text;
-            
-            // Si es una foto o GIF, le activamos la vista especial y el botón de borrar
-            let isMedia = false;
-            let btnEliminar = '';
+            let isMedia = false; let btnEliminar = '';
             
             if (d.type === 'image' || d.type === 'sticker') {
                 content = `<img src="${d.text}" style="width:100%; border-radius:10px; border:2px solid #000;">`;
                 isMedia = true;
-                
-                // Si la imagen la mandaste TÚ, añadimos el botón rojo de eliminar foto
-                if(isMe) {
-                    btnEliminar = `<div class="btn-delete-msg" onclick="eliminarContenido('${d.text}')">🗑️</div>`;
-                }
+                if(isMe) btnEliminar = `<div class="btn-delete-msg" onclick="eliminarContenido('${d.text}')">🗑️</div>`;
             }
 
             box.innerHTML += `<div class="msg-container ${isMe ? 'msg-own' : 'msg-other'}" data-url="${d.text}">
@@ -551,17 +548,20 @@
         
         function enviarCore(content, type) {
             if (!content.trim()) return;
-            // ⌚ AÑADIDO: Ahora los mensajes incluyen una "marca de tiempo" (timestamp) para el auto-borrado
-            const data = { 
-                text: content, type: type, uid: localUid, 
-                autorNombre: userAlias, autorFoto: userPhoto, timestamp: Date.now() 
-            };
+            const data = { text: content, type: type, uid: localUid, autorNombre: userAlias, autorFoto: userPhoto, timestamp: Date.now() };
             
             if (currentChatMode === "global") socket.emit('mensaje_global', data);
             else { data.targetUid = targetUid; socket.emit('mensaje_privado', data); }
             
             if (type === 'text') document.getElementById('chat-input').value = "";
             cerrarTodosPaneles();
+
+            // 🟢 REGLA 2: ANUNCIO CADA 10 MENSAJES ENVIADOS 🟢
+            contadorMensajes++;
+            if(contadorMensajes >= 10) {
+                dispararAnuncioAndroid();
+                contadorMensajes = 0; // Reiniciar contador
+            }
         }
 
         function cerrarTodosPaneles() { document.getElementById('global-popups').classList.remove('active'); document.getElementById('global-media-menu').classList.remove('show'); }
