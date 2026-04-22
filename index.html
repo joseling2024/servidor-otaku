@@ -29,12 +29,20 @@
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         
+        /* ESTILOS WASUTOK */
         #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
         #wasutok-feed { display: flex; flex-direction: column; }
         .v-tok-container { width: 100%; height: calc(100vh - 70px); scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; }
         .v-tok-video { width: 100%; height: 100%; object-fit: contain; }
-        .v-tok-info { position: absolute; bottom: 30px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; pointer-events: none; z-index: 10; }
-        .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); }
+        .v-tok-info { position: absolute; bottom: 30px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; z-index: 10; }
+        
+        /* NOMBRE CLICKEABLE */
+        .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 2px solid var(--secondary); }
+        .v-tok-name:active { transform: scale(0.95); background: var(--primary); border-color: #000; }
+
+        /* BOTÓN ELIMINAR VIDEO */
+        .btn-delete-vid { position: absolute; right: 15px; top: 15px; background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 20; box-shadow: 3px 3px 0px #000; }
+        .btn-delete-vid:active { transform: translate(3px, 3px); box-shadow: 0px 0px 0px #000; }
 
         #bottom-nav { background: #fff; border-top: 5px solid #000; height: 70px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
         .nav-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 900; font-size: 0.8rem; color: #666; transition: 0.2s; }
@@ -150,7 +158,7 @@
 
     <script>
         // ==========================================
-        // ⚙️ TUS DATOS DE CLOUDINARY (SIN FIREBASE STORAGE)
+        // ⚙️ TUS DATOS DE CLOUDINARY
         // ==========================================
         const CLOUDINARY_CLOUD_NAME = "drfsm6hr0"; 
         const CLOUDINARY_UPLOAD_PRESET = "wasu_preset"; 
@@ -216,9 +224,6 @@
             }
         }
 
-        // ==========================================
-        // 🚀 SUBIDA DE ARCHIVOS A CLOUDINARY
-        // ==========================================
         async function subirArchivoCloudinary(input, tipo) {
             const file = input.files[0];
             if(!file) return;
@@ -257,24 +262,48 @@
 
             if(tipo === 'video_tok') btn.innerText = "➕";
         }
+
         // ==========================================
+        // 🗑️ LÓGICA PARA ELIMINAR VIDEO
+        // ==========================================
+        function eliminarVideo(url) {
+            if(confirm("¿Seguro que quieres eliminar este video?")) {
+                // Le avisamos a todos que borren este video
+                socket.emit('mensaje_global', { text: url, type: 'delete_video', uid: localUid, autorNombre: userAlias });
+                
+                // Lo borramos de nuestra propia pantalla al instante
+                const videos = document.querySelectorAll(`.v-tok-container[data-url="${url}"]`);
+                videos.forEach(v => v.remove());
+            }
+        }
 
         function agregarVideoFeed(m, isNew = false) {
             const feed = document.getElementById('wasutok-feed');
-            const html = `<div class="v-tok-container">
+            const isMe = m.uid === localUid; // Verificamos si el video es nuestro
+
+            const html = `
+            <div class="v-tok-container" data-url="${m.text}">
                 <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()"></video>
                 <div class="v-tok-info">
-                    <div class="v-tok-name">@${m.autorNombre.toUpperCase()}</div>
-                    <div>🎬 ¡Mira mi nuevo video en WasuChat!</div>
+                    <div class="v-tok-name" onclick="abrirPrivado('${m.uid}', '${m.autorNombre}')">
+                        @${m.autorNombre.toUpperCase()} 💬
+                    </div>
+                    <div>🎬 ¡Mira mi nuevo video!</div>
                 </div>
+                ${isMe ? `<div class="btn-delete-vid" onclick="eliminarVideo('${m.text}')">🗑️</div>` : ''}
             </div>`;
+            
             if(isNew) feed.insertAdjacentHTML('afterbegin', html);
             else feed.insertAdjacentHTML('beforeend', html);
         }
 
         socket.on('historial_global', (h) => { 
-            mensajesGlobales = h.filter(m => m.type !== 'video_tok');
-            const videosTok = h.filter(m => m.type === 'video_tok');
+            // Filtramos los videos que han sido eliminados por sus dueños
+            const eliminados = h.filter(m => m.type === 'delete_video').map(m => m.text);
+            
+            mensajesGlobales = h.filter(m => m.type !== 'video_tok' && m.type !== 'delete_video');
+            const videosTok = h.filter(m => m.type === 'video_tok' && !eliminados.includes(m.text));
+            
             if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); 
             const feed = document.getElementById('wasutok-feed');
             feed.innerHTML = '';
@@ -284,6 +313,10 @@
         socket.on('nuevo_mensaje_global', (m) => { 
             if(m.type === 'video_tok') {
                 agregarVideoFeed(m, true);
+            } else if (m.type === 'delete_video') {
+                // Alguien eliminó su video, lo quitamos del DOM
+                const videos = document.querySelectorAll(`.v-tok-container[data-url="${m.text}"]`);
+                videos.forEach(v => v.remove());
             } else {
                 mensajesGlobales.push(m); 
                 if(currentChatMode === 'global') renderizarUnMensaje(m); 
@@ -337,12 +370,16 @@
         }
 
         function abrirPrivado(uid, nombre) {
+            if (uid === localUid) return; // No abrir chat contigo mismo
             currentChatMode = "privado"; targetUid = uid;
             document.getElementById('titulo-sala').innerText = "🔒 " + nombre.toUpperCase();
             document.getElementById('btn-regresar').style.display = "block";
             document.getElementById('btn-chats').style.display = "none";
             if(!chatsPrivados[uid]) chatsPrivados[uid] = { nombre: nombre, foto: '', msgs: [] };
             renderizarPantalla(chatsPrivados[uid].msgs);
+            
+            // Si le dieron click desde WasuTok, los pasamos automáticamente a la pestaña Chat
+            switchTab('chat');
         }
 
         function renderizarPantalla(lista) {
