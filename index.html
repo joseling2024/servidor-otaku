@@ -23,43 +23,41 @@
         .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
         .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; }
         
-        header { background: white; border-bottom: 5px solid #000; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
+        header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
         .title { font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; text-transform: uppercase; animation: fiestaWasu 1.5s infinite alternate ease-in-out; }
         @keyframes fiestaWasu { 0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; } 100% { transform: scale(1.05) translateY(2px) rotate(3deg); color: #00f2ff; } }
 
+        /* --- NUEVO: BARRA DE NAVEGACIÓN SUPERIOR --- */
+        #top-nav { background: #fff; border-top: 2px solid #eee; border-bottom: 4px solid #000; height: 50px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
+        .nav-btn { display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-weight: 900; font-size: 1rem; color: #666; transition: 0.2s; width: 100%; height: 100%; border-bottom: 4px solid transparent; }
+        .nav-btn.active { color: var(--primary); border-bottom: 4px solid var(--primary); background: #fff0f5; }
+        .nav-btn i { font-size: 1.2rem; font-style: normal; }
+
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         
-        /* --- ESTILOS WASUTOK CORREGIDOS PARA ANDROID --- */
+        /* ESTILOS WASUTOK */
         #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
-        #wasutok-feed { display: flex; flex-direction: column; height: 100%; } /* Corregido: height 100% */
-        .v-tok-container { width: 100%; height: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; flex-shrink: 0; } /* Corregido: height 100% y flex-shrink */
+        #wasutok-feed { display: flex; flex-direction: column; height: 100%; } 
+        .v-tok-container { width: 100%; height: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; flex-shrink: 0; } 
         .v-tok-video { width: 100%; height: 100%; object-fit: contain; }
         .v-tok-info { position: absolute; bottom: 30px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; z-index: 10; }
         
         .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 2px solid var(--secondary); }
         .v-tok-name:active { transform: scale(0.95); background: var(--primary); border-color: #000; }
 
-        /* BARRA LATERAL DE ACCIONES (TikTok Style) */
+        /* BARRA LATERAL DE ACCIONES */
         .v-tok-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
         
-        /* BOTÓN ME GUSTA */
         .btn-like { background: rgba(0,0,0,0.6); color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 2px 2px 0px #000; }
         .btn-like i { font-style: normal; font-size: 1.2rem; margin-bottom: -2px; }
         .btn-like span { font-size: 0.75rem; font-weight: 900; }
         .btn-like.liked { background: var(--primary); transform: scale(1.1); box-shadow: 0px 0px 10px var(--primary); border-color: #fff; }
         
-        /* BOTÓN ELIMINAR */
         .btn-delete-vid { background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 2px 2px 0px #000; }
         .btn-delete-vid:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
 
-        /* --- BARRA DE NAVEGACIÓN Y BOTÓN CORREGIDOS --- */
-        #bottom-nav { background: #fff; border-top: 5px solid #000; height: 70px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; padding-bottom: env(safe-area-inset-bottom); } /* Corregido: safe-area para Android */
-        .nav-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 900; font-size: 0.8rem; color: #666; transition: 0.2s; }
-        .nav-btn.active { color: var(--primary); transform: scale(1.1); }
-        .nav-btn i { font-size: 1.5rem; font-style: normal; margin-bottom: 3px; }
-
-        /* Botón de subir videos movido más arriba para no chocar */
-        #btn-upload-tok { position: fixed; bottom: 95px; right: 20px; background: var(--accent); border: 3px solid #000; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; font-weight: 900; display: none; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer; }
+        /* Botón de subir videos movido hacia abajo de nuevo */
+        #btn-upload-tok { position: fixed; bottom: 30px; right: 20px; background: var(--accent); border: 3px solid #000; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; font-weight: 900; display: none; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer; }
 
         #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-glass); width: 100%; height: 100%; }
         .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; border-bottom: 4px solid #000;}
@@ -121,6 +119,11 @@
         </div>
     </header>
 
+    <nav id="top-nav">
+        <div class="nav-btn" onclick="switchTab('wasutok')" id="tab-wasutok"><i>🎬</i> VIDEOS</div>
+        <div class="nav-btn active" onclick="switchTab('chat')" id="tab-chat"><i>💬</i> CHAT</div>
+    </nav>
+
     <div id="main-content">
         <section id="wasutok-section">
             <div id="wasutok-feed"></div>
@@ -161,11 +164,6 @@
     <div id="btn-upload-tok" onclick="document.getElementById('video-input').click()">➕</div>
     <input type="file" id="video-input" hidden accept="video/*" onchange="subirArchivoCloudinary(this, 'video_tok')">
 
-    <nav id="bottom-nav">
-        <div class="nav-btn" onclick="switchTab('wasutok')" id="tab-wasutok"><i>🎬</i>WASUTOK</div>
-        <div class="nav-btn active" onclick="switchTab('chat')" id="tab-chat"><i>💬</i>CHAT</div>
-    </nav>
-
     <script>
         // ==========================================
         // ⚙️ TUS DATOS DE CLOUDINARY
@@ -186,7 +184,7 @@
         
         // Memoria local de Likes
         let misLikes = JSON.parse(localStorage.getItem('mis_likes_wasu')) || [];
-        let conteoLikes = {}; // Objeto que guarda el número de likes por URL de video
+        let conteoLikes = {}; 
 
         window.onload = () => { if (userAlias) mostrarInterfazPrincipal(); };
 
@@ -212,7 +210,7 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-header').style.display = 'flex';
             document.getElementById('main-content').style.display = 'flex';
-            document.getElementById('bottom-nav').style.display = 'flex';
+            document.getElementById('top-nav').style.display = 'flex'; // Muestra la barra superior
             document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" style="width:35px;height:35px;border-radius:50%;border:2px solid #000;object-fit:cover;">`;
             socket.emit('registrar_usuario', { uid: localUid, alias: userAlias });
             cambiarAChatGlobal();
@@ -285,34 +283,26 @@
             }
         }
 
-        // ==========================================
-        // ❤️ LÓGICA DE ME GUSTA
-        // ==========================================
         function darMeGusta(url) {
-            if(misLikes.includes(url)) return; // Si ya dio like, no hace nada
+            if(misLikes.includes(url)) return; 
             
             misLikes.push(url);
             localStorage.setItem('mis_likes_wasu', JSON.stringify(misLikes));
             
-            // Actualizamos la pantalla al instante sumando 1
             actualizarDOM_Like(url, (conteoLikes[url] || 0) + 1);
-            
-            // Avisamos al servidor para que actualice a los demás
             socket.emit('mensaje_global', { text: url, type: 'like_video', uid: localUid, autorNombre: userAlias });
         }
 
         function actualizarDOM_Like(url, total) {
-            conteoLikes[url] = total; // Guardar el conteo
+            conteoLikes[url] = total;
             const contenedores = document.querySelectorAll(`.v-tok-container[data-url="${url}"]`);
             contenedores.forEach(c => {
                 const countSpan = c.querySelector('.like-count');
                 const btnLike = c.querySelector('.btn-like');
                 if(countSpan) countSpan.innerText = total;
-                // Pinta de rosa si ya le dio like
                 if(misLikes.includes(url) && btnLike) btnLike.classList.add('liked');
             });
         }
-        // ==========================================
 
         function agregarVideoFeed(m, isNew = false) {
             const feed = document.getElementById('wasutok-feed');
@@ -348,7 +338,6 @@
             mensajesGlobales = h.filter(m => m.type !== 'video_tok' && m.type !== 'delete_video' && m.type !== 'like_video');
             const videosTok = h.filter(m => m.type === 'video_tok' && !eliminados.includes(m.text));
             
-            // Procesar historial de likes antes de dibujar videos
             conteoLikes = {};
             h.filter(m => m.type === 'like_video').forEach(l => {
                 conteoLikes[l.text] = (conteoLikes[l.text] || 0) + 1;
@@ -368,7 +357,6 @@
                 const videos = document.querySelectorAll(`.v-tok-container[data-url="${m.text}"]`);
                 videos.forEach(v => v.remove());
             } else if (m.type === 'like_video') {
-                // Alguien le dio like, sumar 1 si no fui yo (yo ya lo sumé)
                 if(m.uid !== localUid) {
                     actualizarDOM_Like(m.text, (conteoLikes[m.text] || 0) + 1);
                 }
@@ -425,7 +413,7 @@
         }
 
         function abrirPrivado(uid, nombre) {
-            if (uid === localUid) return; // No abrir chat contigo mismo
+            if (uid === localUid) return; 
             currentChatMode = "privado"; targetUid = uid;
             document.getElementById('titulo-sala').innerText = "🔒 " + nombre.toUpperCase();
             document.getElementById('btn-regresar').style.display = "block";
