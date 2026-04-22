@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WasuChat | WasuTok Edition</title>
+    <title>WasuChat | Premium Chat</title>
     
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
@@ -12,21 +12,53 @@
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        :root { --primary: #ff007f; --secondary: #00f2ff; --accent: #ffff00; --bg-glass: rgba(255, 255, 255, 0.95); --border: 4px solid #000; }
-        body { background: linear-gradient(-45deg, #ff99cc, #ffcce6, #66ffff, #b3ffff); background-size: 400% 400%; animation: gradientBG 15s ease infinite; color: #222; font-family: 'M PLUS Rounded 1c', sans-serif; height: 100vh; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+
+        :root {
+            --primary: #ff007f;
+            --secondary: #00f2ff;
+            --accent: #ffff00;
+            --bg-glass: rgba(255, 255, 255, 0.95);
+            --border: 4px solid #000;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #ff99cc, #ffcce6, #66ffff, #b3ffff);
+            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
+            color: #222; font-family: 'M PLUS Rounded 1c', sans-serif; 
+            height: 100vh; height: 100dvh; 
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+
         @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
+        /* PANTALLA DE INGRESO */
         #login-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
         .avatar-upload-container { position: relative; margin-bottom: 20px; cursor: pointer; transition: transform 0.2s; }
         .avatar-preview { width: 130px; height: 130px; border-radius: 50%; border: 5px solid #000; object-fit: cover; background: #eee; box-shadow: 5px 5px 0px var(--primary); }
         .avatar-badge { position: absolute; bottom: 0; right: 0; background: var(--secondary); border: 3px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 2px 2px 0px #000; }
-        .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
-        .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; }
         
-        header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
-        .title { font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; text-transform: uppercase; animation: fiestaWasu 1.5s infinite alternate ease-in-out; }
-        @keyframes fiestaWasu { 0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; } 100% { transform: scale(1.05) translateY(2px) rotate(3deg); color: #00f2ff; } }
+        .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
+        
+        /* DISEÑO PREMIUM DEL BOTÓN */
+        .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; transition: 0.2s; }
+        .btn-entrar:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px #000; }
 
+        header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
+        
+        /* DISEÑO PREMIUM DEL TÍTULO */
+        .title { 
+            font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; 
+            text-transform: uppercase; letter-spacing: 2px; display: inline-block;
+            animation: fiestaWasu 1.5s infinite alternate ease-in-out;
+        }
+
+        @keyframes fiestaWasu {
+            0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
+            50% { transform: scale(1.15) translateY(-4px) rotate(3deg); color: #00f2ff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 6px 6px 0 #000; }
+            100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
+        }
+
+        /* NAVEGACIÓN SUPERIOR TIPO PESTAÑAS */
         #top-nav { background: #fff; border-top: 2px solid #eee; border-bottom: 4px solid #000; height: 50px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
         .nav-btn { display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-weight: 900; font-size: 1rem; color: #666; transition: 0.2s; width: 100%; height: 100%; border-bottom: 4px solid transparent; }
         .nav-btn.active { color: var(--primary); border-bottom: 4px solid var(--primary); background: #fff0f5; }
@@ -34,32 +66,39 @@
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         
+        /* ESTILOS WASUTOK CON ADAPTACIÓN PARA ANDROID */
         #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
-        #wasutok-feed { display: flex; flex-direction: column; height: 100%; } 
-        .v-tok-container { width: 100%; height: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; flex-shrink: 0; } 
+        #wasutok-feed { display: flex; flex-direction: column; height: 100%; }
+        .v-tok-container { width: 100%; height: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; flex-shrink: 0; }
         .v-tok-video { width: 100%; height: 100%; object-fit: contain; }
-        /* Se subió la info del video a 50px para que no la tape los botones de Android */
         .v-tok-info { position: absolute; bottom: 50px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; z-index: 10; }
-        
         .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 2px solid var(--secondary); }
         .v-tok-name:active { transform: scale(0.95); background: var(--primary); border-color: #000; }
 
+        /* BARRA LATERAL (ME GUSTA Y ELIMINAR) */
         .v-tok-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
-        
         .btn-like { background: rgba(0,0,0,0.6); color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 2px 2px 0px #000; }
         .btn-like i { font-style: normal; font-size: 1.2rem; margin-bottom: -2px; }
         .btn-like span { font-size: 0.75rem; font-weight: 900; }
         .btn-like.liked { background: var(--primary); transform: scale(1.1); box-shadow: 0px 0px 10px var(--primary); border-color: #fff; }
-        
         .btn-delete-vid { background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 2px 2px 0px #000; }
         .btn-delete-vid:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
 
-        #btn-upload-tok { position: fixed; bottom: 40px; right: 20px; background: var(--accent); border: 3px solid #000; width: 60px; height: 60px; border-radius: 50%; font-size: 2rem; font-weight: 900; display: none; align-items: center; justify-content: center; box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer; }
+        /* BOTÓN FLOTANTE PARA SUBIR VIDEO (EN ESQUINA INFERIOR DERECHA) */
+        #btn-upload-tok { 
+            position: fixed; bottom: 40px; right: 20px; 
+            background: var(--accent); border: 3px solid #000; 
+            width: 60px; height: 60px; border-radius: 50%; 
+            font-size: 2rem; font-weight: 900; 
+            display: none; align-items: center; justify-content: center; 
+            box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer;
+        }
 
         #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-glass); width: 100%; height: 100%; }
-        .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; border-bottom: 4px solid #000;}
-        .btn-regresar, .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-        .btn-regresar { background: var(--accent); display: none; }
+        
+        .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #000;}
+        .btn-regresar { background: var(--accent); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; display: none; }
+        .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
 
         #messages-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .msg-bubble { padding: 10px 15px; border: 3px solid #000; border-radius: 15px; font-weight: 700; position: relative; box-shadow: 4px 4px 0px #000; word-wrap: break-word; font-size: 1rem;}
@@ -68,13 +107,24 @@
         .msg-other { align-self: flex-start; }
         .msg-other .msg-bubble { background: white; border-bottom-left-radius: 2px; color: #000;}
 
-        #chats-list-overlay { position: absolute; inset: 0; background: white; z-index: 100; display: none; flex-direction: column; padding: 20px; }
+        #chats-list-overlay {
+            position: absolute; inset: 0; background: white; z-index: 100;
+            display: none; flex-direction: column; padding: 20px;
+        }
         #chats-list-overlay.active { display: flex; }
-        .contact-item { display: flex; align-items: center; gap: 15px; padding: 12px; border: 3px solid #000; border-radius: 15px; margin-bottom: 10px; cursor: pointer; background: #f9f9f9; }
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 4px solid #000; padding-bottom: 10px; }
+        
+        /* DISEÑO PREMIUM DEL ITEM DE CONTACTO */
+        .contact-item {
+            display: flex; align-items: center; gap: 15px; padding: 12px;
+            border: 3px solid #000; border-radius: 15px; margin-bottom: 10px;
+            cursor: pointer; transition: 0.2s; background: #f9f9f9;
+        }
+        .contact-item:hover { background: var(--secondary); transform: scale(1.02); }
         .contact-item img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #000; }
 
         .input-bar { background: white; border-top: 5px solid #000; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .input-field { flex: 1; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-weight: 700; outline: none;}
+        .input-field { flex: 1; min-width: 0; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-family: inherit; font-weight: 700; outline: none;}
         .btn-action { background: var(--secondary); border: 3px solid #000; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 3px 3px 0px #000; }
         .btn-enviar-msg { background: var(--primary); color: white; border: 3px solid #000; padding: 0 15px; height: 45px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px #000; }
 
@@ -90,7 +140,7 @@
         #toast-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
         .toast-notif { background: var(--secondary); border: 3px solid #000; padding: 10px 15px; border-radius: 15px; box-shadow: 5px 5px 0px #000; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 900; animation: fadeInUp 0.3s forwards; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-        
+
         /* EL COJÍN DE SEGURIDAD PARA ANDROID */
         .android-spacer { height: 25px; width: 100%; background: white; flex-shrink: 0; }
     </style>
@@ -145,13 +195,16 @@
                     <button id="btn-regresar" class="btn-regresar" onclick="cambiarAChatGlobal()">🌍 VOLVER</button>
                 </div>
             </div>
+
             <div id="messages-box"></div>
+            
             <div class="input-bar">
                 <button class="btn-action" onclick="toggleMenu('media')">➕</button>
                 <button class="btn-action" style="background:var(--accent)" onclick="toggleMenu('emoji')">😀</button>
                 <input type="text" id="chat-input" class="input-field" placeholder="Escribe..." autocomplete="off">
                 <button class="btn-enviar-msg" onclick="enviarTextoBoton()">➤</button>
             </div>
+
             <div id="global-popups" class="popup-panel"></div>
             <div id="global-media-menu" class="media-menu">
                 <div class="media-opt" onclick="togglePopupInside('sticker')">🌟 Buscar GIFs</div>
@@ -168,7 +221,7 @@
 
     <script>
         // ==========================================
-        // ⚙️ TUS DATOS DE CLOUDINARY
+        // ⚙️ TUS DATOS DE CLOUDINARY DEFINITIVOS
         // ==========================================
         const CLOUDINARY_CLOUD_NAME = "drfsm6hr0"; 
         const CLOUDINARY_UPLOAD_PRESET = "wasu_preset"; 
@@ -212,6 +265,7 @@
             document.getElementById('app-header').style.display = 'flex';
             document.getElementById('main-content').style.display = 'flex';
             document.getElementById('top-nav').style.display = 'flex'; 
+            
             document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" style="width:35px;height:35px;border-radius:50%;border:2px solid #000;object-fit:cover;">`;
             socket.emit('registrar_usuario', { uid: localUid, alias: userAlias });
             cambiarAChatGlobal();
@@ -370,7 +424,11 @@
         socket.on('nuevo_mensaje_privado', (msg) => {
             const otroUid = msg.uid === localUid ? msg.targetUid : msg.uid;
             if(!chatsPrivados[otroUid]) {
-                chatsPrivados[otroUid] = { nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre, foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto, msgs: [] };
+                chatsPrivados[otroUid] = { 
+                    nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre,
+                    foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto,
+                    msgs: [] 
+                };
             }
             chatsPrivados[otroUid].msgs.push(msg);
             if(currentChatMode === 'privado' && targetUid === otroUid) renderizarUnMensaje(msg);
@@ -396,7 +454,8 @@
                 if(uids.length === 0) container.innerHTML = '<p style="text-align:center; font-weight:700; margin-top:20px;">No hay chats... 🌸</p>';
                 uids.forEach(uid => {
                     const info = chatsPrivados[uid];
-                    const item = document.createElement('div'); item.className = 'contact-item';
+                    const item = document.createElement('div');
+                    item.className = 'contact-item';
                     item.innerHTML = `<img src="${info.foto}"> <div class="contact-info" style="font-weight:900; font-size:1.1rem;">${info.nombre}</div>`;
                     item.onclick = () => { abrirPrivado(uid, info.nombre); toggleChatsList(false); };
                     container.appendChild(item);
