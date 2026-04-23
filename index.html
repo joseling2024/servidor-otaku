@@ -41,7 +41,7 @@
         .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; transition: 0.2s; }
         .btn-entrar:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px #000; }
 
-        header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
+        header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 2px solid #eee; }
         
         .title { 
             font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; 
@@ -55,7 +55,7 @@
             100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
         }
 
-        #top-nav { background: #fff; border-top: 2px solid #eee; border-bottom: 4px solid #000; height: 50px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
+        #top-nav { background: #fff; border-bottom: 4px solid #000; height: 50px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
         .nav-btn { display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-weight: 900; font-size: 1rem; color: #666; transition: 0.2s; width: 100%; height: 100%; border-bottom: 4px solid transparent; }
         .nav-btn.active { color: var(--primary); border-bottom: 4px solid var(--primary); background: #fff0f5; }
         .nav-btn i { font-size: 1.2rem; font-style: normal; }
@@ -165,45 +165,34 @@
 
     <header id="app-header">
         <div class="title" style="font-size: 1.2rem;">✨ WASUCHAT ✨</div>
-        <div style="display: flex; align-items: center; gap: 10px;">
-            <div id="user-info" style="display: flex; align-items: center; gap: 10px; font-weight: 800;"></div>
-            <button onclick="salirGremio()" style="background:#ff3333; color:white; border:2px solid #000; padding:5px 10px; border-radius:8px; font-weight:900; cursor:pointer;">Salir</button>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            
+            <div 
+                onclick="window.location.href='mailto:luzestellaortegaacevedo3030@gmail.com?subject=Reporte de Contenido Inapropiado en WasuChat&body=Usuario reportado: [Nombre]%0A%0AContenido reportado: [Descripción o enlace del video]%0A%0AMotivo: [Detalles del reporte]'" 
+                style="
+                    cursor: pointer; font-size: 0.75rem; background: linear-gradient(135deg, #ff004c 0%, #ff6b6b 100%); 
+                    color: white; padding: 6px 10px; border-radius: 15px; font-weight: bold; 
+                    border: 2px solid #e60045; box-shadow: 0 3px 0 #b30036; transition: all 0.2s ease; 
+                    display: flex; align-items: center; gap: 4px; text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+                "
+                onmouseover="this.style.transform='translateY(1px)'; this.style.boxShadow='0 2px 0 #b30036';" 
+                onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 3px 0 #b30036';"
+            >
+                <span style="font-size: 1rem;">🚩</span> Reportar
+            </div>
+
+            <div id="user-info" style="display: flex; align-items: center; font-weight: 800;"></div>
+            <button onclick="salirGremio()" style="background:#ff3333; color:white; border:2px solid #000; padding:6px 10px; border-radius:10px; font-weight:900; cursor:pointer;">Salir</button>
         </div>
     </header>
 
-   <div id="top-nav" style="display: flex; align-items: center; background: #fff; padding: 10px 15px; border-bottom: 2px solid #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; gap: 10px;">
-    
-    <span style="font-weight: 900; font-size: 1.3rem; color: #000;">WASUCHAT</span>
-
-    <div 
-        onclick="window.location.href='mailto:luzestellaortegaacevedo3030@gmail.com?subject=Reporte de Contenido Inapropiado en WasuChat&body=Usuario reportado: [Nombre]%0A%0AContenido reportado: [Descripción o enlace del video]%0A%0AMotivo: [Detalles del reporte]'" 
-        style="
-            cursor: pointer; 
-            font-size: 0.8rem; 
-            background: linear-gradient(135deg, #ff004c 0%, #ff6b6b 100%); 
-            color: white; 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            font-weight: bold; 
-            border: 2px solid #e60045; 
-            box-shadow: 0 4px 0 #b30036; 
-            transition: all 0.2s ease; 
-            display: flex; 
-            align-items: center; 
-            gap: 5px; 
-            text-shadow: 1px 1px 0px rgba(0,0,0,0.3); 
-            margin-left: auto; 
-            z-index: 10000;
-        "
-        onmouseover="this.style.transform='translateY(1px)'; this.style.boxShadow='0 3px 0 #b30036';" 
-        onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 0 #b30036';"
-        onmousedown="this.style.boxShadow='0 1px 0 #b30036'; this.style.transform='translateY(3px)';"
-        onmouseup="this.style.boxShadow='0 3px 0 #b30036'; this.style.transform='translateY(1px)';"
-    >
-        <span style="font-size: 1.1rem;">🚩</span>
-        <span style="margin-top: 1px;">Reportar</span>
-    </div>
-</div>
+    <nav id="top-nav">
+        <div id="tab-wasutok" class="nav-btn" onclick="switchTab('wasutok')">
+            <i>🎬</i> VIDEOS
+        </div>
+        <div id="tab-chat" class="nav-btn active" onclick="switchTab('chat')">
+            <i>💬</i> CHAT
+        </div>
     </nav>
 
     <div id="main-content">
