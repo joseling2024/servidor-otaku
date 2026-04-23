@@ -171,11 +171,39 @@
         </div>
     </header>
 
-    <nav id="top-nav">
-        <div class="nav-btn" onclick="switchTab('wasutok')" id="tab-wasutok"><i>🎬</i> VIDEOS</div>
-        <div class="nav-btn active" onclick="switchTab('chat')" id="tab-chat"><i>💬</i> CHAT</div> <div onclick="window.location.href='mailto:luzestellaortegaacevedo3030@gmail.com?subject=Reporte de Contenido en WasuChat'" style="cursor:pointer; font-size: 0.75rem; background: #ff004c; color: white; padding: 6px 10px; border-radius: 15px; font-weight: bold; margin-left: auto;">
-    🚩 Reportar
-</div> 
+   <div id="top-nav" style="display: flex; align-items: center; background: #fff; padding: 10px 15px; border-bottom: 2px solid #000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; gap: 10px;">
+    
+    <span style="font-weight: 900; font-size: 1.3rem; color: #000;">WASUCHAT</span>
+
+    <div 
+        onclick="window.location.href='mailto:luzestellaortegaacevedo3030@gmail.com?subject=Reporte de Contenido Inapropiado en WasuChat&body=Usuario reportado: [Nombre]%0A%0AContenido reportado: [Descripción o enlace del video]%0A%0AMotivo: [Detalles del reporte]'" 
+        style="
+            cursor: pointer; 
+            font-size: 0.8rem; 
+            background: linear-gradient(135deg, #ff004c 0%, #ff6b6b 100%); 
+            color: white; 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-weight: bold; 
+            border: 2px solid #e60045; 
+            box-shadow: 0 4px 0 #b30036; 
+            transition: all 0.2s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 5px; 
+            text-shadow: 1px 1px 0px rgba(0,0,0,0.3); 
+            margin-left: auto; 
+            z-index: 10000;
+        "
+        onmouseover="this.style.transform='translateY(1px)'; this.style.boxShadow='0 3px 0 #b30036';" 
+        onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 4px 0 #b30036';"
+        onmousedown="this.style.boxShadow='0 1px 0 #b30036'; this.style.transform='translateY(3px)';"
+        onmouseup="this.style.boxShadow='0 3px 0 #b30036'; this.style.transform='translateY(1px)';"
+    >
+        <span style="font-size: 1.1rem;">🚩</span>
+        <span style="margin-top: 1px;">Reportar</span>
+    </div>
+</div>
     </nav>
 
     <div id="main-content">
