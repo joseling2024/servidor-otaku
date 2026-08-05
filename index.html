@@ -2,149 +2,153 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>WasuChat | Premium Chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WasuChat | Anime Chat</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
     
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
     <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;900&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --primary: #ff007f;
-            --secondary: #00f2ff;
-            --accent: #ffff00;
-            --bg-glass: rgba(255, 255, 255, 0.95);
-            --border: 4px solid #000;
+            --primary: #ff00ff; 
+            --primary-glow: rgba(255, 0, 255, 0.6);
+            --secondary: #00ffff; 
+            --secondary-glow: rgba(0, 255, 255, 0.6);
+            --accent: #ffee00; 
+            
+            --bg-grad-1: #1a0033; --bg-grad-2: #330066; --bg-grad-3: #004d4d; --bg-grad-4: #003366;
+            --glass-bg: rgba(0, 0, 0, 0.5);
+            --glass-panel: rgba(15, 0, 30, 0.95);
+            
+            --text-main: #f0f0f0;
+            --text-input: #fff;
+            
+            --bubble-own: linear-gradient(135deg, #ff00ff, #aa00ff);
+            --bubble-own-text: #fff;
+            --bubble-other: #3a3b3c;
+            --bubble-other-text: #e4e6eb;
+        }
+
+        body.light-mode {
+            --primary: #ff4d88; 
+            --primary-glow: rgba(255, 77, 136, 0.4);
+            --secondary: #00b3ff; 
+            --secondary-glow: rgba(0, 179, 255, 0.4);
+            --accent: #ffcc00; 
+            
+            --bg-grad-1: #ffe6f2; --bg-grad-2: #e6f7ff; --bg-grad-3: #fff0f5; --bg-grad-4: #e6ffff;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-panel: rgba(255, 255, 255, 0.95);
+            
+            --text-main: #333;
+            --text-input: #333;
+            
+            --bubble-own: #0084ff; 
+            --bubble-own-text: #fff;
+            --bubble-other: #e4e6eb; 
+            --bubble-other-text: #050505;
         }
 
         body {
-            background: linear-gradient(-45deg, #ff99cc, #ffcce6, #66ffff, #b3ffff);
-            background-size: 400% 400%; animation: gradientBG 15s ease infinite;
-            color: #222; font-family: 'M PLUS Rounded 1c', sans-serif; 
+            background: linear-gradient(-45deg, var(--bg-grad-1), var(--bg-grad-2), var(--bg-grad-3), var(--bg-grad-4));
+            background-size: 400% 400%; animation: gradientBG 20s ease infinite;
+            color: var(--text-main); font-family: 'M PLUS Rounded 1c', sans-serif; 
             height: 100vh; height: 100dvh; 
             display: flex; flex-direction: column; overflow: hidden;
+            transition: background 0.5s ease, color 0.5s ease;
         }
 
         @keyframes gradientBG { 0% {background-position: 0% 50%;} 50% {background-position: 100% 50%;} 100% {background-position: 0% 50%;} }
 
-        #login-screen { position: fixed; inset: 0; background: white; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; }
-        .avatar-upload-container { position: relative; margin-bottom: 20px; cursor: pointer; transition: transform 0.2s; }
-        .avatar-preview { width: 130px; height: 130px; border-radius: 50%; border: 5px solid #000; object-fit: cover; background: #eee; box-shadow: 5px 5px 0px var(--primary); }
-        .avatar-badge { position: absolute; bottom: 0; right: 0; background: var(--secondary); border: 3px solid #000; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; box-shadow: 2px 2px 0px #000; }
-        
-        .login-input { border: 4px solid #000; padding: 15px; border-radius: 15px; font-size: 1.2rem; font-weight: 900; text-align: center; margin-bottom: 20px; outline: none; width: 80%; max-width: 250px; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1); }
-        
-        .btn-entrar { background: var(--primary); color: white; border: 4px solid #000; padding: 15px 40px; font-size: 1.2rem; font-weight: 900; border-radius: 15px; cursor: pointer; box-shadow: 6px 6px 0px #000; transition: 0.2s; }
-        .btn-entrar:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0px #000; }
-
-        header { background: white; padding: 10px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 2px solid #eee; }
-        
-        .title { 
-            font-family: 'M PLUS Rounded 1c', sans-serif; font-weight: 900; font-size: 1.6rem; 
-            text-transform: uppercase; letter-spacing: 2px; display: inline-block;
-            animation: fiestaWasu 1.5s infinite alternate ease-in-out;
+        .theme-toggle-btn {
+            background: var(--glass-bg); border: 2px solid var(--secondary);
+            border-radius: 50%; width: 45px; height: 45px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; cursor: pointer; backdrop-filter: blur(5px);
+            box-shadow: 0 0 10px var(--secondary-glow); transition: 0.3s;
         }
+        .theme-toggle-btn:hover { transform: scale(1.1); }
 
-        @keyframes fiestaWasu {
-            0% { transform: scale(1) translateY(0px) rotate(-3deg); color: #ffff00; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
-            50% { transform: scale(1.15) translateY(-4px) rotate(3deg); color: #00f2ff; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 6px 6px 0 #000; }
-            100% { transform: scale(1.05) translateY(2px) rotate(-1deg); color: #ff007f; text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 4px 4px 0 #000; }
-        }
+        #login-screen { position: fixed; inset: 0; background: var(--glass-bg); backdrop-filter: blur(10px); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; overflow: hidden; }
+        #sakura-container { position: absolute; inset: 0; pointer-events: none; z-index: 1001; }
+        .sakura-petal { position: absolute; background: #ffb3d9; border-radius: 150% 0 150% 0; animation: fall linear infinite; opacity: 0.8; box-shadow: 0 0 5px #ffb3d9; }
+        @keyframes fall { 0% { transform: translateY(-10vh) translateX(0) rotate(0deg) scale(0.5); } 100% { transform: translateY(110vh) translateX(20vw) rotate(360deg) scale(1.2); } }
+        
+        .login-content { z-index: 1002; display: flex; flex-direction: column; align-items: center; }
+        .avatar-upload-container { position: relative; margin-bottom: 30px; cursor: pointer; transition: transform 0.2s; }
+        .avatar-upload-container:hover { transform: scale(1.05); }
+        .avatar-preview { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--secondary); object-fit: cover; background: #2a0052; box-shadow: 0 0 30px var(--primary-glow); }
+        .avatar-badge { position: absolute; bottom: 5px; right: 5px; background: var(--accent); border-radius: 50%; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 0 0 15px var(--accent-glow); }
+        .login-input { border: 2px solid var(--primary); background: var(--glass-bg); color: var(--text-input); padding: 15px; border-radius: 20px; font-size: 1.2rem; font-weight: 700; text-align: center; margin-bottom: 25px; outline: none; width: 85%; max-width: 280px; box-shadow: 0 0 10px var(--primary-glow); transition: 0.3s; }
+        .btn-entrar { background: var(--primary); color: white; border: none; padding: 16px 50px; font-size: 1.3rem; font-weight: 900; border-radius: 25px; cursor: pointer; box-shadow: 0 5px 20px var(--primary-glow); transition: 0.3s ease; text-transform: uppercase; }
 
-        #top-nav { background: #fff; border-bottom: 4px solid #000; height: 50px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
-        .nav-btn { display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; font-weight: 900; font-size: 1rem; color: #666; transition: 0.2s; width: 100%; height: 100%; border-bottom: 4px solid transparent; }
-        .nav-btn.active { color: var(--primary); border-bottom: 4px solid var(--primary); background: #fff0f5; }
-        .nav-btn i { font-size: 1.2rem; font-style: normal; }
+        header { background: var(--glass-bg); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(128, 128, 128, 0.2); padding: 12px 15px; display: none; justify-content: space-between; align-items: center; z-index: 100; }
+        .title { font-weight: 900; font-size: 1.7rem; text-transform: uppercase; color: var(--text-main); text-shadow: 0 0 10px var(--primary-glow); animation: animePulse 2s infinite alternate ease-in-out; }
+        @keyframes animePulse { 0% { transform: scale(1); text-shadow: 0 0 10px var(--secondary-glow); } 100% { transform: scale(1.05); text-shadow: 0 0 20px var(--primary-glow); } }
 
         #main-content { display: none; flex: 1; overflow: hidden; width: 100%; position: relative; }
         
         #wasutok-section { display: none; width: 100%; height: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; background: #000; position: relative; }
-        #wasutok-feed { display: flex; flex-direction: column; height: 100%; }
-        .v-tok-container { width: 100%; height: 100%; scroll-snap-align: start; position: relative; border-bottom: 2px solid #222; flex-shrink: 0; }
+        #wasutok-feed { display: flex; flex-direction: column; }
+        .v-tok-container { width: 100%; height: calc(100vh - 70px); scroll-snap-align: start; position: relative; border-bottom: 1px solid #1a1a1a; }
         .v-tok-video { width: 100%; height: 100%; object-fit: contain; }
-        .v-tok-info { position: absolute; bottom: 50px; left: 15px; color: white; text-shadow: 2px 2px 5px #000; z-index: 10; }
-        .v-tok-name { font-weight: 900; font-size: 1.3rem; margin-bottom: 5px; color: var(--secondary); cursor: pointer; transition: 0.2s; display: inline-block; padding: 5px 10px; background: rgba(0,0,0,0.5); border-radius: 10px; border: 2px solid var(--secondary); }
-        .v-tok-name:active { transform: scale(0.95); background: var(--primary); border-color: #000; }
+        .v-tok-info { position: absolute; bottom: 30px; left: 15px; color: white; text-shadow: 0 2px 5px #000; pointer-events: none; z-index: 10; }
+        .v-tok-name { font-weight: 900; font-size: 1.4rem; color: var(--secondary); }
 
-        .v-tok-actions { position: absolute; right: 15px; bottom: 80px; display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20; }
-        .btn-like { background: rgba(0,0,0,0.6); color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: 0.3s; box-shadow: 2px 2px 0px #000; }
-        .btn-like i { font-style: normal; font-size: 1.2rem; margin-bottom: -2px; }
-        .btn-like span { font-size: 0.75rem; font-weight: 900; }
-        .btn-like.liked { background: var(--primary); transform: scale(1.1); box-shadow: 0px 0px 10px var(--primary); border-color: #fff; }
+        #bottom-nav { background: var(--glass-panel); backdrop-filter: blur(10px); border-top: 1px solid rgba(128, 128, 128, 0.2); height: 70px; display: none; justify-content: space-around; align-items: center; flex-shrink: 0; z-index: 200; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; cursor: pointer; font-weight: 800; font-size: 0.85rem; color: gray; transition: 0.3s;}
+        .nav-btn.active { color: var(--primary); transform: scale(1.1); text-shadow: 0 0 10px var(--primary-glow); }
+        .nav-btn i { font-size: 1.6rem; font-style: normal; margin-bottom: 2px; }
+
+        #btn-upload-tok { position: fixed; bottom: 90px; right: 20px; background: var(--accent); border: none; width: 65px; height: 65px; border-radius: 50%; font-size: 2.2rem; font-weight: 900; color: #000; display: none; align-items: center; justify-content: center; box-shadow: 0 5px 20px var(--accent-glow); z-index: 500; cursor: pointer; }
+
+        #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--glass-bg); backdrop-filter: blur(15px); width: 100%; height: 100%; }
+        .chat-nav { background: var(--glass-panel); color: var(--text-main); padding: 12px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; border-bottom: 1px solid rgba(128, 128, 128, 0.2); }
+        .btn-regresar, .btn-chats-list, .btn-salir { border: none; padding: 8px 14px; border-radius: 12px; font-weight: 900; cursor: pointer; font-size: 0.8rem; }
+        .btn-regresar { background: var(--accent); color: #000; display: none; }
+        .btn-chats-list { background: var(--secondary); color: #000; }
+        .btn-salir { background:#ff3333; color:white; margin-left: 10px; }
+
+        #messages-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 8px; } 
         
-        .btn-delete-vid { background: #ff3333; color: white; border: 3px solid #000; border-radius: 50%; width: 50px; height: 50px; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 2px 2px 0px #000; }
-        .btn-delete-vid:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
-
-        #btn-upload-tok { 
-            position: fixed; bottom: 40px; right: 20px; 
-            background: var(--accent); border: 3px solid #000; 
-            width: 60px; height: 60px; border-radius: 50%; 
-            font-size: 2rem; font-weight: 900; 
-            display: none; align-items: center; justify-content: center; 
-            box-shadow: 4px 4px 0px #000; z-index: 500; cursor: pointer;
-        }
-
-        #chat-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-glass); width: 100%; height: 100%; }
-        
-        .chat-nav { background: #000; color: #fff; padding: 10px; display: flex; justify-content: space-between; align-items: center; font-weight: 900; text-transform: uppercase; border-bottom: 4px solid #000;}
-        .btn-regresar { background: var(--accent); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; display: none; }
-        .btn-chats-list { background: var(--secondary); color: #000; border: 2px solid #fff; padding: 5px 10px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-
-        #messages-box { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .msg-container { display: flex; flex-direction: column; max-width: 80%; }
-        .msg-bubble { padding: 10px 15px; border: 3px solid #000; border-radius: 15px; font-weight: 700; position: relative; box-shadow: 4px 4px 0px #000; word-wrap: break-word; font-size: 1rem;}
+        .msg-container { display: flex; flex-direction: column; max-width: 75%; }
         .msg-own { align-self: flex-end; align-items: flex-end; }
-        .msg-own .msg-bubble { background: var(--primary); color: white; border-bottom-right-radius: 2px; }
-        .msg-other { align-self: flex-start; }
-        .msg-other .msg-bubble { background: white; border-bottom-left-radius: 2px; color: #000;}
+        .msg-other { align-self: flex-start; align-items: flex-start; }
+        .msg-bubble { padding: 10px 16px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-weight: 400; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .msg-own .msg-bubble { background: var(--bubble-own); color: var(--bubble-own-text); border-radius: 18px 18px 4px 18px; }
+        .msg-other .msg-bubble { background: var(--bubble-other); color: var(--bubble-other-text); border-radius: 18px 18px 18px 4px; }
 
-        /* NUEVO: BOTÓN DE ELIMINAR FOTOS EN CHAT */
-        .btn-delete-msg {
-            position: absolute; top: -10px; right: -10px;
-            background: #ff3333; color: white; border: 2px solid #000; border-radius: 50%;
-            width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;
-            font-size: 0.8rem; cursor: pointer; box-shadow: 2px 2px 0px #000; z-index: 5;
-        }
-        .btn-delete-msg:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0px #000; }
-
-        #chats-list-overlay {
-            position: absolute; inset: 0; background: white; z-index: 100;
-            display: none; flex-direction: column; padding: 20px;
-        }
+        #chats-list-overlay { position: absolute; inset: 0; background: var(--glass-panel); backdrop-filter: blur(15px); z-index: 100; display: none; flex-direction: column; padding: 20px; }
         #chats-list-overlay.active { display: flex; }
-        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 4px solid #000; padding-bottom: 10px; }
-        
-        .contact-item {
-            display: flex; align-items: center; gap: 15px; padding: 12px;
-            border: 3px solid #000; border-radius: 15px; margin-bottom: 10px;
-            cursor: pointer; transition: 0.2s; background: #f9f9f9;
-        }
-        .contact-item:hover { background: var(--secondary); transform: scale(1.02); }
-        .contact-item img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid #000; }
+        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
+        .contact-item { display: flex; align-items: center; gap: 15px; padding: 15px; border: 2px solid rgba(128,128,128,0.2); border-radius: 20px; margin-bottom: 12px; cursor: pointer; background: var(--glass-bg); }
+        .contact-item img { width: 55px; height: 55px; border-radius: 50%; object-fit:cover; }
 
-        .input-bar { background: white; border-top: 5px solid #000; padding: 10px; display: flex; align-items: center; gap: 8px; }
-        .input-field { flex: 1; min-width: 0; border: 3px solid #000; padding: 10px 12px; border-radius: 15px; font-family: inherit; font-weight: 700; outline: none;}
-        .btn-action { background: var(--secondary); border: 3px solid #000; width: 45px; height: 45px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; box-shadow: 3px 3px 0px #000; }
-        .btn-enviar-msg { background: var(--primary); color: white; border: 3px solid #000; padding: 0 15px; height: 45px; border-radius: 12px; font-weight: 900; cursor: pointer; box-shadow: 3px 3px 0px #000; }
+        .input-bar { background: var(--glass-panel); padding: 12px; display: flex; align-items: center; gap: 10px; border-top: 1px solid rgba(128,128,128,0.2); }
+        .input-field { flex: 1; min-width: 0; border: none; background: var(--glass-bg); color: var(--text-input); padding: 12px 15px; border-radius: 20px; font-weight: 600; outline: none; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); }
+        .btn-action { background: var(--secondary); border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-size: 1.3rem; }
+        .btn-enviar-msg { background: var(--primary); color: white; border: none; padding: 0 20px; height: 45px; border-radius: 20px; font-weight: 900; cursor: pointer; }
 
-        .popup-panel { background: #f9f9f9; border-top: 4px solid #000; display: none; height: 320px; overflow-y: auto; padding: 10px;}
+        .popup-panel { background: var(--glass-panel); border-top: 2px solid var(--primary); display: none; height: 320px; overflow-y: auto; padding: 15px; }
         .popup-panel.active { display: flex; flex-direction: column; }
-        .grid-sticker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; justify-items: center; }
-        .sticker-item { width: 100%; height: 90px; object-fit: cover; border-radius: 10px; border: 2px solid #000; cursor: pointer; background: white; }
-
-        .media-menu { background: white; border-top: 4px solid #000; padding: 15px; display: none; flex-direction: column; gap: 10px; }
+        .media-menu { background: var(--glass-panel); border-top: 2px solid var(--secondary); padding: 15px; display: none; flex-direction: column; gap: 12px; }
         .media-menu.show { display: flex; }
-        .media-opt { background: #eee; border: 2px solid #000; padding: 12px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .media-opt { background: var(--glass-bg); color: var(--text-main); border: 1px solid rgba(128,128,128,0.2); padding: 15px; border-radius: 12px; font-weight: 800; cursor: pointer; }
 
         #toast-container { position: fixed; top: 15px; left: 50%; transform: translateX(-50%); z-index: 9999; display: flex; flex-direction: column; gap: 10px; width: 90%; max-width: 400px; }
-        .toast-notif { background: var(--secondary); border: 3px solid #000; padding: 10px 15px; border-radius: 15px; box-shadow: 5px 5px 0px #000; display: flex; align-items: center; gap: 10px; cursor: pointer; font-weight: 900; animation: fadeInUp 0.3s forwards; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        .toast-notif { background: var(--primary); color: white; border-radius: 20px; padding: 12px; display: flex; align-items: center; gap: 12px; animation: fadeInUp 0.4s forwards; font-weight: 800;}
+        @keyframes fadeInUp { from { opacity: 0; transform: translate(-50%, -20px); } to { opacity: 1; transform: translate(-50%, 0); } }
 
-        .android-spacer { height: 25px; width: 100%; background: white; flex-shrink: 0; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.3); border-radius: 3px; }
     </style>
 </head>
 <body>
@@ -153,47 +157,32 @@
     <div id="toast-container"></div>
 
     <div id="login-screen">
-        <h1 class="title" style="margin-bottom: 20px;">✨ WASUCHAT ✨</h1>
-        <label for="avatar-input" class="avatar-upload-container">
-            <img id="avatar-preview" class="avatar-preview" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Wasu">
-            <div class="avatar-badge">📷</div>
-        </label>
-        <input type="file" id="avatar-input" hidden accept="image/*" onchange="comprimirYMostrarAvatar(event)">
-        <input type="text" id="apodo-input" class="login-input" placeholder="Tu Apodo..." maxlength="15">
-        <button class="btn-entrar" onclick="ingresarGremio()">ENTRAR</button>
+        <div id="sakura-container"></div>
+        
+        <div style="position: absolute; top: 20px; right: 20px; z-index: 1003;">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn-login">🌙</button>
+        </div>
+
+        <div class="login-content">
+            <h1 class="title" style="margin-bottom: 30px; font-size: 2.2rem;">✨ WASUCHAT ✨</h1>
+            <label for="avatar-input" class="avatar-upload-container">
+                <img id="avatar-preview" class="avatar-preview" src="https://api.dicebear.com/7.x/adventurer/svg?seed=Wasu">
+                <div class="avatar-badge">📷</div>
+            </label>
+            <input type="file" id="avatar-input" hidden accept="image/*" onchange="comprimirYMostrarAvatar(event)">
+            <input type="text" id="apodo-input" class="login-input" placeholder="Tu Apodo Otaku..." maxlength="15">
+            <button class="btn-entrar" onclick="ingresarGremio()">✨ ENTRAR ✨</button>
+        </div>
     </div>
 
     <header id="app-header">
-        <div class="title" style="font-size: 1.2rem;">✨ WASUCHAT ✨</div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            
-            <div 
-                onclick="window.location.href='mailto:luzestellaortegaacevedo3030@gmail.com?subject=Reporte de Contenido Inapropiado en WasuChat&body=Usuario reportado: [Nombre]%0A%0AContenido reportado: [Descripción o enlace del video]%0A%0AMotivo: [Detalles del reporte]'" 
-                style="
-                    cursor: pointer; font-size: 0.75rem; background: linear-gradient(135deg, #ff004c 0%, #ff6b6b 100%); 
-                    color: white; padding: 6px 10px; border-radius: 15px; font-weight: bold; 
-                    border: 2px solid #e60045; box-shadow: 0 3px 0 #b30036; transition: all 0.2s ease; 
-                    display: flex; align-items: center; gap: 4px; text-shadow: 1px 1px 0px rgba(0,0,0,0.3);
-                "
-                onmouseover="this.style.transform='translateY(1px)'; this.style.boxShadow='0 2px 0 #b30036';" 
-                onmouseout="this.style.transform='translateY(0px)'; this.style.boxShadow='0 3px 0 #b30036';"
-            >
-                <span style="font-size: 1rem;">🚩</span> Reportar
-            </div>
-
-            <div id="user-info" style="display: flex; align-items: center; font-weight: 800;"></div>
-            <button onclick="salirGremio()" style="background:#ff3333; color:white; border:2px solid #000; padding:6px 10px; border-radius:10px; font-weight:900; cursor:pointer;">Salir</button>
+        <div class="title" style="font-size: 1.3rem;">✨ WASUCHAT ✨</div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button class="theme-toggle-btn" style="width: 35px; height: 35px; font-size: 1rem;" onclick="toggleTheme()" id="theme-btn-header">🌙</button>
+            <div id="user-info" style="display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--text-main);"></div>
+            <button class="btn-salir" onclick="salirGremio()">Salir</button>
         </div>
     </header>
-
-    <nav id="top-nav">
-        <div id="tab-wasutok" class="nav-btn" onclick="switchTab('wasutok')">
-            <i>🎬</i> VIDEOS
-        </div>
-        <div id="tab-chat" class="nav-btn active" onclick="switchTab('chat')">
-            <i>💬</i> CHAT
-        </div>
-    </nav>
 
     <div id="main-content">
         <section id="wasutok-section">
@@ -202,7 +191,7 @@
 
         <div id="chats-list-overlay">
             <div class="list-header">
-                <h2 style="font-weight: 900;">📩 MIS CHATS</h2>
+                <h2 style="font-weight: 900; color: var(--text-main);">📩 MIS CHATS</h2>
                 <button class="btn-regresar" style="display:block;" onclick="toggleChatsList(false)">CERRAR</button>
             </div>
             <div id="contacts-container"></div>
@@ -210,7 +199,7 @@
 
         <section id="chat-container">
             <div class="chat-nav">
-                <span id="titulo-sala">SALA GLOBAL</span>
+                <span id="titulo-sala" style="color: var(--primary);">🌍 SALA GLOBAL</span>
                 <div style="display: flex; gap: 10px;">
                     <button id="btn-chats" class="btn-chats-list" onclick="toggleChatsList(true)">📩 CHATS</button>
                     <button id="btn-regresar" class="btn-regresar" onclick="cambiarAChatGlobal()">🌍 VOLVER</button>
@@ -221,32 +210,80 @@
             
             <div class="input-bar">
                 <button class="btn-action" onclick="toggleMenu('media')">➕</button>
-                <button class="btn-action" style="background:var(--accent)" onclick="toggleMenu('emoji')">😀</button>
-                <input type="text" id="chat-input" class="input-field" placeholder="Escribe..." autocomplete="off">
+                <button class="btn-action" style="background:var(--accent);" onclick="toggleMenu('emoji')">😀</button>
+                <input type="text" id="chat-input" class="input-field" placeholder="Escribe un mensaje..." autocomplete="off">
                 <button class="btn-enviar-msg" onclick="enviarTextoBoton()">➤</button>
             </div>
 
             <div id="global-popups" class="popup-panel"></div>
             <div id="global-media-menu" class="media-menu">
-                <div class="media-opt" onclick="togglePopupInside('sticker')">🌟 Buscar GIFs</div>
+                <div class="media-opt" onclick="togglePopupInside('sticker')">🌟 Buscar GIFs Anime</div>
                 <div class="media-opt" onclick="document.getElementById('img-input').click()">🖼️ Subir Foto</div>
             </div>
-            <input type="file" id="img-input" hidden accept="image/*" onchange="subirArchivoCloudinary(this, 'image')">
-            
-            <div class="android-spacer"></div>
+            <input type="file" id="img-input" hidden accept="image/*" onchange="subirImagen(this)">
         </section>
     </div>
 
     <div id="btn-upload-tok" onclick="document.getElementById('video-input').click()">➕</div>
-    <input type="file" id="video-input" hidden accept="video/*" onchange="subirArchivoCloudinary(this, 'video_tok')">
+    <input type="file" id="video-input" hidden accept="video/mp4,video/webm" onchange="subirVideoTok(this)">
+
+    <nav id="bottom-nav">
+        <div class="nav-btn" onclick="switchTab('wasutok')" id="tab-wasutok"><i>🎬</i>WASUTOK</div>
+        <div class="nav-btn active" onclick="switchTab('chat')" id="tab-chat"><i>💬</i>CHAT</div>
+    </nav>
 
     <script>
-        // ==========================================
-        // ⚙️ TUS DATOS DE CLOUDINARY
-        // ==========================================
-        const CLOUDINARY_CLOUD_NAME = "drfsm6hr0"; 
-        const CLOUDINARY_UPLOAD_PRESET = "wasu_preset"; 
-        // ==========================================
+        // --- FUNCIÓN DE SEGURIDAD (Protección XSS) ---
+        // Convierte caracteres especiales en entidades HTML seguras
+        function sanitizarHTML(str) {
+            const temp = document.createElement('div');
+            temp.textContent = str;
+            return temp.innerHTML;
+        }
+
+        function applyTheme(isLight) {
+            const btnLogin = document.getElementById('theme-btn-login');
+            const btnHeader = document.getElementById('theme-btn-header');
+            if(isLight) {
+                document.body.classList.add('light-mode');
+                btnLogin.innerText = '☀️'; btnHeader.innerText = '☀️';
+            } else {
+                document.body.classList.remove('light-mode');
+                btnLogin.innerText = '🌙'; btnHeader.innerText = '🌙';
+            }
+        }
+
+        function toggleTheme() {
+            const isLight = !document.body.classList.contains('light-mode');
+            localStorage.setItem('wasu_theme', isLight ? 'light' : 'dark');
+            applyTheme(isLight);
+        }
+
+        if(localStorage.getItem('wasu_theme') === 'light') { applyTheme(true); }
+
+        function createSakura() {
+            const container = document.getElementById('sakura-container');
+            if(!container) return;
+            for(let i = 0; i < 30; i++) {
+                let petal = document.createElement('div');
+                petal.className = 'sakura-petal';
+                petal.style.left = Math.random() * 100 + 'vw';
+                petal.style.width = (Math.random() * 10 + 5) + 'px';
+                petal.style.height = (Math.random() * 15 + 10) + 'px';
+                petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
+                petal.style.animationDelay = (Math.random() * 5) + 's';
+                container.appendChild(petal);
+            }
+        }
+        createSakura(); 
+
+        // --- LÓGICA DE FIREBASE Y SOCKET ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyD3OO7nMrR3Hw0c0yfgi7bZc5B5MQg-EtQ",
+            storageBucket: "chat-otaku-c7fe4.firebasestorage.app",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
 
         const socket = io('https://servidor-otaku.onrender.com');
 
@@ -257,29 +294,6 @@
         let targetUid = "";
         let mensajesGlobales = [];
         let chatsPrivados = {}; 
-        
-        let misLikes = JSON.parse(localStorage.getItem('mis_likes_wasu')) || [];
-        let conteoLikes = {}; 
-
-        // 🟢 VARIABLES PARA CONTAR Y MOSTRAR ANUNCIOS 🟢
-        let contadorMensajes = 0;
-        let contadorVideos = 0;
-
-        function dispararAnuncioAndroid() {
-            // Revisa si la app está corriendo en Android, si es así, dispara el anuncio
-            if (typeof Android !== "undefined" && Android !== null) {
-                Android.mostrarAnuncio();
-            }
-        }
-
-        function contarVideo() {
-            // 🟢 REGLA 4: ANUNCIO CADA 5 VIDEOS 🟢
-            contadorVideos++;
-            if(contadorVideos >= 5) {
-                dispararAnuncioAndroid();
-                contadorVideos = 0;
-            }
-        }
 
         window.onload = () => { if (userAlias) mostrarInterfazPrincipal(); };
 
@@ -292,9 +306,12 @@
 
         function ingresarGremio() {
             const inputApodo = document.getElementById('apodo-input').value.trim();
-            if (!inputApodo) return alert("¡Pon un apodo!");
-            userAlias = inputApodo;
+            if (!inputApodo) return alert("¡Pon un apodo otaku!");
+            
+            // Sanitizamos el nombre de usuario desde que entra
+            userAlias = sanitizarHTML(inputApodo);
             if(!userPhoto) userPhoto = `https://api.dicebear.com/7.x/adventurer/svg?seed=${userAlias}`;
+            
             localStorage.setItem('otaku_uid', localUid);
             localStorage.setItem('otaku_alias', userAlias);
             localStorage.setItem('otaku_avatar', userPhoto);
@@ -305,9 +322,10 @@
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('app-header').style.display = 'flex';
             document.getElementById('main-content').style.display = 'flex';
-            document.getElementById('top-nav').style.display = 'flex'; 
+            document.getElementById('bottom-nav').style.display = 'flex'; 
             
-            document.getElementById('user-info').innerHTML = `<img src="${userPhoto}" style="width:35px;height:35px;border-radius:50%;border:2px solid #000;object-fit:cover;">`;
+            // Protegemos la foto en caso de manipulación manual de LocalStorage
+            document.getElementById('user-info').innerHTML = `<img src="${encodeURI(userPhoto)}" style="width:38px;height:38px;border-radius:50%; object-fit:cover;">`;
             socket.emit('registrar_usuario', { uid: localUid, alias: userAlias });
             cambiarAChatGlobal();
         }
@@ -322,10 +340,6 @@
                 document.getElementById('tab-chat').classList.remove('active');
                 document.getElementById('btn-upload-tok').style.display = 'flex';
                 cerrarTodosPaneles();
-                
-                // 🟢 REGLA 3: ANUNCIO AL ABRIR LA PESTAÑA DE VIDEOS 🟢
-                dispararAnuncioAndroid();
-
             } else {
                 document.getElementById('chat-container').style.display = 'flex';
                 document.getElementById('wasutok-section').style.display = 'none';
@@ -336,151 +350,60 @@
             }
         }
 
-        async function subirArchivoCloudinary(input, tipo) {
+        async function subirVideoTok(input) {
             const file = input.files[0];
             if(!file) return;
-            if(tipo === 'video_tok' && file.size > 20000000) return alert("Video demasiado grande (Máx 20MB)");
+            if(file.size > 20000000) return alert("Video demasiado grande (Máx 20MB)");
+
+            const btn = document.getElementById('btn-upload-tok');
+            btn.innerText = "⏳";
             
-            let btn;
-            if(tipo === 'video_tok') {
-                btn = document.getElementById('btn-upload-tok');
-                btn.innerText = "⏳";
-            } else {
-                cerrarTodosPaneles();
-            }
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-
             try {
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/upload`, {
-                    method: 'POST', body: formData
-                });
-                const data = await res.json();
+                const ref = storage.ref(`wasutok/${Date.now()}_${file.name}`);
+                await ref.put(file);
+                const url = await ref.getDownloadURL();
                 
-                if(data.secure_url) {
-                    enviarCore(data.secure_url, tipo);
-                    if(tipo === 'video_tok') alert("¡Video compartido en WasuTok!");
-                } else {
-                    alert("Error al subir. ¿Creaste el preset como 'Unsigned'?");
-                }
-            } catch (e) { alert("Error de red al subir el archivo."); }
-
-            if(tipo === 'video_tok') btn.innerText = "➕";
-        }
-
-        function eliminarContenido(url) {
-            if(confirm("¿Seguro que quieres eliminar esto para todos?")) {
-                socket.emit('mensaje_global', { text: url, type: 'delete_content', uid: localUid, autorNombre: userAlias });
-                const elementos = document.querySelectorAll(`[data-url="${url}"]`);
-                elementos.forEach(el => el.remove());
-            }
-        }
-
-        function darMeGusta(url) {
-            if(misLikes.includes(url)) return; 
-            misLikes.push(url);
-            localStorage.setItem('mis_likes_wasu', JSON.stringify(misLikes));
-            actualizarDOM_Like(url, (conteoLikes[url] || 0) + 1);
-            socket.emit('mensaje_global', { text: url, type: 'like_video', uid: localUid, autorNombre: userAlias });
-        }
-
-        function actualizarDOM_Like(url, total) {
-            conteoLikes[url] = total;
-            const contenedores = document.querySelectorAll(`.v-tok-container[data-url="${url}"]`);
-            contenedores.forEach(c => {
-                const countSpan = c.querySelector('.like-count');
-                const btnLike = c.querySelector('.btn-like');
-                if(countSpan) countSpan.innerText = total;
-                if(misLikes.includes(url) && btnLike) btnLike.classList.add('liked');
-            });
+                socket.emit('mensaje_global', { text: url, type: 'video_tok', uid: localUid, autorNombre: userAlias, autorFoto: userPhoto });
+                alert("¡Video compartido!");
+            } catch (e) { alert("Error al subir el video"); }
+            btn.innerText = "➕";
         }
 
         function agregarVideoFeed(m, isNew = false) {
             const feed = document.getElementById('wasutok-feed');
-            const isMe = m.uid === localUid; 
-            const likesActuales = conteoLikes[m.text] || 0;
-            const hasLiked = misLikes.includes(m.text) ? 'liked' : '';
-
-            const html = `
-            <div class="v-tok-container" data-url="${m.text}">
-                <video class="v-tok-video" src="${m.text}" loop onclick="this.paused ? this.play() : this.pause()" onplay="contarVideo()"></video>
-                <div class="v-tok-info">
-                    <div class="v-tok-name" onclick="abrirPrivado('${m.uid}', '${m.autorNombre}')">
-                        @${m.autorNombre.toUpperCase()} 💬
-                    </div>
-                    <div>🎬 ¡Mira mi nuevo video!</div>
-                </div>
-                
-                <div class="v-tok-actions">
-                    <div class="btn-like ${hasLiked}" onclick="darMeGusta('${m.text}')">
-                        <i>❤️</i>
-                        <span class="like-count">${likesActuales}</span>
-                    </div>
-                    ${isMe ? `<div class="btn-delete-vid" onclick="eliminarContenido('${m.text}')">🗑️</div>` : ''}
-                </div>
-            </div>`;
+            const safeName = sanitizarHTML(m.autorNombre).toUpperCase();
+            const safeUrl = encodeURI(m.text);
             
+            const html = `
+                <div class="v-tok-container">
+                    <video class="v-tok-video" src="${safeUrl}" controls playsinline preload="metadata" style="background-color: #000;"></video>
+                    <div class="v-tok-info" style="pointer-events: none;">
+                        <div class="v-tok-name">@${safeName}</div>
+                        <div style="font-weight:700; text-shadow: 0 1px 3px #000;">🎬 ¡Mira mi nuevo video!</div>
+                    </div>
+                </div>`;
             if(isNew) feed.insertAdjacentHTML('afterbegin', html);
             else feed.insertAdjacentHTML('beforeend', html);
         }
 
         socket.on('historial_global', (h) => { 
-            const eliminados = h.filter(m => m.type === 'delete_video' || m.type === 'delete_content').map(m => m.text);
-            mensajesGlobales = h.filter(m => {
-                if(m.type === 'video_tok' || m.type === 'delete_video' || m.type === 'delete_content' || m.type === 'like_video') return false;
-                if(eliminados.includes(m.text)) return false;
-                return true;
-            });
-            
-            const DOS_DIAS_EN_MILISEGUNDOS = 48 * 60 * 60 * 1000;
-            const ahora = Date.now();
-            
-            const videosTok = h.filter(m => {
-                if(m.type !== 'video_tok') return false;
-                if(eliminados.includes(m.text)) return false;
-                const tiempoPublicado = m.timestamp || ahora; 
-                if((ahora - tiempoPublicado) > DOS_DIAS_EN_MILISEGUNDOS) return false;
-                return true;
-            });
-            
-            conteoLikes = {};
-            h.filter(m => m.type === 'like_video').forEach(l => {
-                conteoLikes[l.text] = (conteoLikes[l.text] || 0) + 1;
-            });
-            
+            mensajesGlobales = h.filter(m => m.type !== 'video_tok');
+            const videosTok = h.filter(m => m.type === 'video_tok');
             if(currentChatMode === 'global') renderizarPantalla(mensajesGlobales); 
-            
             const feed = document.getElementById('wasutok-feed');
             feed.innerHTML = '';
             videosTok.reverse().forEach(v => agregarVideoFeed(v));
         });
 
         socket.on('nuevo_mensaje_global', (m) => { 
-            if(m.type === 'video_tok') {
-                agregarVideoFeed(m, true);
-            } else if (m.type === 'delete_video' || m.type === 'delete_content') {
-                const elementos = document.querySelectorAll(`[data-url="${m.text}"]`);
-                elementos.forEach(el => el.remove());
-            } else if (m.type === 'like_video') {
-                if(m.uid !== localUid) {
-                    actualizarDOM_Like(m.text, (conteoLikes[m.text] || 0) + 1);
-                }
-            } else {
-                mensajesGlobales.push(m); 
-                if(currentChatMode === 'global') renderizarUnMensaje(m); 
-            }
+            if(m.type === 'video_tok') { agregarVideoFeed(m, true); } 
+            else { mensajesGlobales.push(m); if(currentChatMode === 'global') renderizarUnMensaje(m); }
         });
 
         socket.on('nuevo_mensaje_privado', (msg) => {
             const otroUid = msg.uid === localUid ? msg.targetUid : msg.uid;
             if(!chatsPrivados[otroUid]) {
-                chatsPrivados[otroUid] = { 
-                    nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre,
-                    foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto,
-                    msgs: [] 
-                };
+                chatsPrivados[otroUid] = { nombre: (msg.uid === localUid) ? "Chat" : msg.autorNombre, foto: (msg.uid === localUid) ? "https://api.dicebear.com/7.x/adventurer/svg?seed="+otroUid : msg.autorFoto, msgs: [] };
             }
             chatsPrivados[otroUid].msgs.push(msg);
             if(currentChatMode === 'privado' && targetUid === otroUid) renderizarUnMensaje(msg);
@@ -490,10 +413,14 @@
             if (currentChatMode !== "privado" || targetUid !== data.deUid) {
                 document.getElementById('audio-notif').play().catch(e=>e);
                 const toast = document.createElement('div'); toast.className = 'toast-notif';
-                toast.innerHTML = `<img src="${data.deFoto}" style="width:30px;height:30px;border-radius:50%;border:2px solid #000;"> <span>NUEVO MENSAJE DE ${data.deNombre}</span>`;
-                toast.onclick = () => { abrirPrivado(data.deUid, data.deNombre); toast.remove(); };
+                
+                const safeName = sanitizarHTML(data.deNombre);
+                const safeFoto = encodeURI(data.deFoto);
+
+                toast.innerHTML = `<img src="${safeFoto}" style="width:35px;height:35px;border-radius:50%;object-fit:cover;"> <span>MENSAJE DE ${safeName}</span>`;
+                toast.onclick = () => { abrirPrivado(data.deUid, safeName); toast.remove(); };
                 document.getElementById('toast-container').appendChild(toast);
-                setTimeout(() => toast.remove(), 4000);
+                setTimeout(() => { if(toast) toast.remove()}, 4000);
             }
         });
 
@@ -503,13 +430,16 @@
             if(show) {
                 container.innerHTML = '';
                 const uids = Object.keys(chatsPrivados);
-                if(uids.length === 0) container.innerHTML = '<p style="text-align:center; font-weight:700; margin-top:20px;">No hay chats... 🌸</p>';
+                if(uids.length === 0) container.innerHTML = '<p style="text-align:center; color:var(--text-main); margin-top:30px;">Aún no tienes chats privados...</p>';
                 uids.forEach(uid => {
                     const info = chatsPrivados[uid];
-                    const item = document.createElement('div');
-                    item.className = 'contact-item';
-                    item.innerHTML = `<img src="${info.foto}"> <div class="contact-info" style="font-weight:900; font-size:1.1rem;">${info.nombre}</div>`;
-                    item.onclick = () => { abrirPrivado(uid, info.nombre); toggleChatsList(false); };
+                    const item = document.createElement('div'); item.className = 'contact-item';
+                    
+                    const safeName = sanitizarHTML(info.nombre);
+                    const safeFoto = encodeURI(info.foto);
+
+                    item.innerHTML = `<img src="${safeFoto}"> <div style="font-weight:900; font-size:1.2rem; color:var(--text-main);">${safeName}</div>`;
+                    item.onclick = () => { abrirPrivado(uid, safeName); toggleChatsList(false); };
                     container.appendChild(item);
                 });
                 overlay.classList.add('active');
@@ -518,21 +448,19 @@
 
         function cambiarAChatGlobal() {
             currentChatMode = "global"; targetUid = "";
-            document.getElementById('titulo-sala').innerText = "SALA GLOBAL";
+            document.getElementById('titulo-sala').innerText = "🌍 SALA GLOBAL";
             document.getElementById('btn-regresar').style.display = "none";
             document.getElementById('btn-chats').style.display = "block";
             renderizarPantalla(mensajesGlobales);
         }
 
         function abrirPrivado(uid, nombre) {
-            if (uid === localUid) return; 
             currentChatMode = "privado"; targetUid = uid;
-            document.getElementById('titulo-sala').innerText = "🔒 " + nombre.toUpperCase();
+            document.getElementById('titulo-sala').innerText = "🔒 " + sanitizarHTML(nombre).toUpperCase();
             document.getElementById('btn-regresar').style.display = "block";
             document.getElementById('btn-chats').style.display = "none";
             if(!chatsPrivados[uid]) chatsPrivados[uid] = { nombre: nombre, foto: '', msgs: [] };
             renderizarPantalla(chatsPrivados[uid].msgs);
-            switchTab('chat');
         }
 
         function renderizarPantalla(lista) {
@@ -544,50 +472,45 @@
         function renderizarUnMensaje(d, scroll = true) {
             const box = document.getElementById('messages-box');
             const isMe = d.uid === localUid;
-            let content = d.text;
-            let isMedia = false; let btnEliminar = '';
             
+            // SANITIZAMOS EL MENSAJE Y EL NOMBRE
+            let safeContent = '';
+            const safeName = sanitizarHTML(d.autorNombre);
+
             if (d.type === 'image' || d.type === 'sticker') {
-                content = `<img src="${d.text}" style="width:100%; border-radius:10px; border:2px solid #000;">`;
-                isMedia = true;
-                if(isMe) btnEliminar = `<div class="btn-delete-msg" onclick="eliminarContenido('${d.text}')">🗑️</div>`;
+                safeContent = `<img src="${encodeURI(d.text)}" style="width:100%; border-radius:12px;">`;
+            } else {
+                safeContent = sanitizarHTML(d.text);
             }
 
-            box.innerHTML += `<div class="msg-container ${isMe ? 'msg-own' : 'msg-other'}" data-url="${d.text}">
-                ${!isMe ? `<span style="font-size:0.75rem; font-weight:900; margin-bottom:2px; cursor:pointer;" onclick="abrirPrivado('${d.uid}','${d.autorNombre}')">${d.autorNombre}</span>` : ''}
-                <div class="msg-bubble">${content} ${btnEliminar}</div>
+            box.innerHTML += `<div class="msg-container ${isMe ? 'msg-own' : 'msg-other'}">
+                ${!isMe ? `<span style="font-size:0.75rem; font-weight:700; color:gray; margin-bottom:3px; margin-left:10px; cursor:pointer;" onclick="abrirPrivado('${d.uid}','${safeName}')">${safeName}</span>` : ''}
+                <div class="msg-bubble">${safeContent}</div>
             </div>`;
             
             if(scroll) box.scrollTop = box.scrollHeight;
         }
 
-        function scrollToBottom() { const box = document.getElementById('messages-box'); box.scrollTop = box.scrollHeight; }
-
         function enviarTextoBoton() { enviarCore(document.getElementById('chat-input').value, 'text'); }
-        
         function enviarCore(content, type) {
             if (!content.trim()) return;
-            const data = { text: content, type: type, uid: localUid, autorNombre: userAlias, autorFoto: userPhoto, timestamp: Date.now() };
-            
+            const data = { text: content, type: type, uid: localUid, autorNombre: userAlias, autorFoto: userPhoto };
             if (currentChatMode === "global") socket.emit('mensaje_global', data);
             else { data.targetUid = targetUid; socket.emit('mensaje_privado', data); }
-            
             if (type === 'text') document.getElementById('chat-input').value = "";
             cerrarTodosPaneles();
+        }
 
-            // 🟢 REGLA 2: ANUNCIO CADA 10 MENSAJES ENVIADOS 🟢
-            contadorMensajes++;
-            if(contadorMensajes >= 10) {
-                dispararAnuncioAndroid();
-                contadorMensajes = 0; // Reiniciar contador
-            }
+        function subirImagen(input) {
+            const file = input.files[0]; if (!file) return;
+            const task = storage.ref(`wasuchat/${Date.now()}`).put(file);
+            task.on('state_changed', null, null, () => {
+                task.snapshot.ref.getDownloadURL().then(url => enviarCore(url, 'image'));
+            });
         }
 
         function cerrarTodosPaneles() { document.getElementById('global-popups').classList.remove('active'); document.getElementById('global-media-menu').classList.remove('show'); }
-        function toggleMenu(m) {
-            if (m === 'media') document.getElementById('global-media-menu').classList.toggle('show');
-            else togglePopupInside('emoji');
-        }
+        function toggleMenu(m) { if (m === 'media') document.getElementById('global-media-menu').classList.toggle('show'); else togglePopupInside('emoji'); }
 
         function togglePopupInside(type) {
             const panel = document.getElementById('global-popups'); panel.innerHTML = '';
@@ -596,11 +519,12 @@
                 picker.addEventListener('emoji-click', e => document.getElementById('chat-input').value += e.detail.unicode);
                 panel.appendChild(picker);
             } else {
-                panel.innerHTML = `<div class="grid-sticker" id="g-res"></div>`;
-                fetch(`https://g.tenor.com/v1/search?q=anime&key=LIVDSRZULELA&limit=12`)
+                panel.innerHTML = `<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;" id="g-res"></div>`;
+                fetch(`https://g.tenor.com/v1/search?q=anime+sparkle&key=LIVDSRZULELA&limit=12`)
                 .then(r => r.json()).then(data => {
                     data.results.forEach(gif => {
-                        const img = document.createElement('img'); img.src = gif.media[0].gif.url; img.className = 'sticker-item';
+                        const img = document.createElement('img'); img.src = gif.media[0].gif.url; 
+                        img.style = "width:100%; height:90px; object-fit:cover; border-radius:10px; cursor:pointer;";
                         img.onclick = () => { enviarCore(img.src, 'sticker'); cerrarTodosPaneles(); };
                         document.getElementById('g-res').appendChild(img);
                     });
@@ -608,6 +532,7 @@
             }
             panel.classList.add('active');
         }
+        function scrollToBottom() { const box = document.getElementById('messages-box'); box.scrollTop = box.scrollHeight; }
     </script>
 </body>
 </html>
